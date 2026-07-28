@@ -117,7 +117,7 @@ h1,h2,h3{{ font-family:'Space Grotesk',sans-serif; scroll-margin-top: 40px; }}
 .grafico{{ background:var(--card); padding:12px 6px; margin:25px 0; border-radius:18px; box-shadow:var(--shadow); border:1px solid var(--card-border); position:relative; width:100%; overflow:hidden; }}
 @media (min-width: 768px) {{ .grafico {{ padding:20px; margin:40px 0; border-radius:20px; }} }}
 .grafico:before{{ content:""; position:absolute; top:0; left:0; right:0; height:4px; background:var(--grad); }}
-.grafico .plotly-graph-div {{ width: 100% !important; height: 52vh !important; min-height: 360px !important; max-height: 550px !important; margin: 0 auto !important; }}
+.grafico .plotly-graph-div {{ width: 100% !important;aspect-ratio: 4 / 3;height: auto !important;min-height: 320px;max-height: 520px;}}
 .grafico svg {{ max-width: 100% !important; }}
 h2{{ margin-top:40px; margin-bottom:18px; font-size:22px; font-weight:700; color:var(--text); border-bottom:1px solid var(--border); padding-bottom:10px; }}
 @media (min-width: 768px) {{ h2 {{ font-size:28px; margin-top:60px; margin-bottom:20px; padding-bottom:12px; }} }}
