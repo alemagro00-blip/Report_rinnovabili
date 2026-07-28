@@ -129,12 +129,12 @@ h1,h2,h3{{ font-family:'Space Grotesk',sans-serif; scroll-margin-top: 40px; }}
 }}
 .grafico svg {{ max-width: 100% !important; }}
 
-/* Nasconde la modebar di Plotly da mobile per evitare sovrapposizioni con il titolo */
-@media (max-width: 767px) {
-    .modebar-container {
+/* Nasconde la modebar di Plotly da mobile */
+@media (max-width: 767px) {{
+    .modebar-container {{
         display: none !important;
-    }
-}
+    }}
+}}
 
 h2{{ margin-top:40px; margin-bottom:18px; font-size:22px; font-weight:700; color:var(--text); border-bottom:1px solid var(--border); padding-bottom:10px; }}
 @media (min-width: 768px) {{ h2 {{ font-size:28px; margin-top:60px; margin-bottom:20px; padding-bottom:12px; }} }}
@@ -186,7 +186,7 @@ function adaptPlotlyCharts() {
                 'font.size': isMobile ? 10 : 13,
                 'margin.l': isMobile ? 10 : 60,
                 'margin.r': isMobile ? 10 : 30,
-                'margin.t': isMobile ? 65 : 50, // Margine superiore per dare spazio al titolo su mobile
+                'margin.t': isMobile ? 65 : 50,
                 'margin.b': isMobile ? 35 : 50
             });
             Plotly.Plots.resize(p);
