@@ -89,7 +89,7 @@ def generate_exact_html():
 <html lang="it">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>{raw_title}</title>
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 <style>
@@ -97,68 +97,73 @@ def generate_exact_html():
 :root{{ --bg:#F6F7FB; --card:#FFFFFF; --card-border:#E4E6F0; --primary:#00A67E; --text:#181C2A; --text-dim:#5C6274; --border:#E4E6F0; --shadow:0 20px 45px rgba(30,30,60,.08); --grad: linear-gradient(120deg, #00A67E 0%, #00C49A 100%); }}
 *{{ box-sizing:border-box; }}
 
-/* Font ridotto su mobile per compattare la vista */
+/* STILE BASE (ORIGINALE PER COMPUTER) */
 body{{ 
     background: radial-gradient(circle at 15% 0%, rgba(0,166,126,.08), transparent 40%), radial-gradient(circle at 90% 10%, rgba(15,169,140,.07), transparent 45%), var(--bg); 
     font-family:'Inter',sans-serif; 
     max-width:1100px; 
     margin:auto; 
-    padding:10px 8px 50px; 
+    padding:30px 30px 80px; 
     color:var(--text); 
-    line-height:1.6; 
-    font-size:14px; 
+    line-height:1.75; 
+    font-size:18px; 
 }}
-@media (min-width: 768px) {{ body {{ padding:30px 30px 80px; font-size:18px; line-height:1.75; }} }}
 
 h1,h2,h3{{ font-family:'Space Grotesk',sans-serif; scroll-margin-top: 40px; }}
-.intro{{ background:transparent; padding:5px 0; width:100%; }}
-.intro .eyebrow{{ display:inline-block; font-size:10px; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:var(--primary); background:rgba(0,166,126,.10); border:1px solid rgba(0,166,126,.25); padding:4px 10px; border-radius:999px; margin-bottom:8px; }}
-.intro h1{{ margin:0; font-size:24px; font-weight:700; letter-spacing:-0.5px; line-height:1.15; background:var(--grad); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }}
-@media (min-width: 768px) {{ .intro h1 {{ font-size: 48px; letter-spacing:-1px; }} }}
-.intro .subtitle{{ font-size:13px; font-style: italic; color:var(--text-dim); margin-top:8px; max-width:850px; font-weight:400; line-height:1.5; opacity: 0.9; }}
-@media (min-width: 768px) {{ .intro .subtitle {{ font-size:16px; line-height:1.6; }} }}
+.intro{{ background:transparent; padding:10px 0; width:100%; }}
+.intro .eyebrow{{ display:inline-block; font-size:11px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:var(--primary); background:rgba(0,166,126,.10); border:1px solid rgba(0,166,126,.25); padding:5px 14px; border-radius:999px; margin-bottom:12px; }}
+.intro h1{{ margin:0; font-size:48px; font-weight:700; letter-spacing:-1px; line-height:1.15; background:var(--grad); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }}
+.intro .subtitle{{ font-size:16px; font-style: italic; color:var(--text-dim); margin-top:10px; max-width:850px; font-weight:400; line-height:1.6; opacity: 0.9; }}
 
-.header-divider {{ border: none; height: 2px; background: linear-gradient(90deg, rgba(0,166,126,0.5) 0%, rgba(228,230,240,0.4) 70%, transparent 100%); margin: 12px 0 20px 0; }}
+.header-divider {{ border: none; height: 2px; background: linear-gradient(90deg, rgba(0,166,126,0.5) 0%, rgba(228,230,240,0.4) 70%, transparent 100%); margin: 15px 0 25px 0; }}
 
-#indice{{ background:var(--card); border:1px solid var(--card-border); border-radius:14px; padding:15px; margin:0 0 25px; box-shadow:var(--shadow); }}
-#indice h2{{ margin:0 0 12px 0!important; font-size:11px!important; font-weight:700!important; letter-spacing:1px; text-transform:uppercase; color:var(--text-dim)!important; border:none!important; padding:0!important; }}
-#indice ul{{ list-style:none; margin:0; padding:0; display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:8px 15px; }}
+#indice{{ background:var(--card); border:1px solid var(--card-border); border-radius:18px; padding:20px; margin:0 0 35px; box-shadow:var(--shadow); }}
+#indice h2{{ margin:0 0 16px 0!important; font-size:12px!important; font-weight:700!important; letter-spacing:1.5px; text-transform:uppercase; color:var(--text-dim)!important; border:none!important; padding:0!important; }}
+#indice ul{{ list-style:none; margin:0; padding:0; display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:12px 20px; }}
 #indice li{{ margin:0; }}
-#indice a{{ color:var(--text); font-weight:600; font-size:13px; text-decoration:none; display:flex; align-items:center; gap:6px; transition:.2s ease; cursor:pointer; }}
+#indice a{{ color:var(--text); font-weight:600; font-size:14px; text-decoration:none; display:flex; align-items:center; gap:8px; transition:.2s ease; cursor:pointer; }}
 #indice a:before{{ content:"→"; color:var(--primary); font-weight:700; }}
+#indice a:hover{{ color:var(--primary); transform:translateX(3px); }}
 
-.testo{{ margin:18px 0; color:var(--text-dim); word-wrap: break-word; font-size: 14px; }}
-@media (min-width: 768px) {{ .testo {{ margin:25px 0; font-size: 17px; }} }}
+.testo{{ margin:25px 0; color:var(--text-dim); word-wrap: break-word; }}
 .testo strong{{ color:var(--text); font-weight:600; }}
 
-/* GRAFICI: Riduzione margini interni e min-height per cellulare */
-.grafico{{ background:var(--card); padding:8px 4px; margin:18px 0; border-radius:14px; box-shadow:var(--shadow); border:1px solid var(--card-border); position:relative; width:100%; overflow:hidden; }}
-@media (min-width: 768px) {{ .grafico {{ padding:20px; margin:40px 0; border-radius:20px; }} }}
-.grafico:before{{ content:""; position:absolute; top:0; left:0; right:0; height:3px; background:var(--grad); }}
-.grafico .plotly-graph-div {{ 
-    width: 100% !important; 
-    height: auto !important; 
-    min-height: 250px; 
-    max-height: 480px; 
-    margin: 0 auto !important; 
-}}
+.grafico{{ background:var(--card); padding:20px; margin:40px 0; border-radius:20px; box-shadow:var(--shadow); border:1px solid var(--card-border); position:relative; width:100%; overflow:hidden; }}
+.grafico:before{{ content:""; position:absolute; top:0; left:0; right:0; height:4px; background:var(--grad); }}
+.grafico .plotly-graph-div {{ width: 100% !important; height: auto !important; margin: 0 auto !important; }}
 .grafico svg {{ max-width: 100% !important; }}
 
-/* Nasconde modebar Plotly da mobile */
-@media (max-width: 767px) {{
-    .modebar-container {{
-        display: none !important;
-    }}
-}}
+h2{{ margin-top:60px; margin-bottom:20px; font-size:28px; font-weight:700; color:var(--text); border-bottom:1px solid var(--border); padding-bottom:12px; }}
 
-h2{{ margin-top:30px; margin-bottom:14px; font-size:18px; font-weight:700; color:var(--text); border-bottom:1px solid var(--border); padding-bottom:8px; }}
-@media (min-width: 768px) {{ h2 {{ font-size:28px; margin-top:60px; margin-bottom:20px; padding-bottom:12px; }} }}
-
-table{{ width:100%; border-collapse:collapse; margin:20px 0; background:var(--card); box-shadow:var(--shadow); border-radius:10px; overflow-x:auto; display:block; border:1px solid var(--card-border); font-size:12px; }}
-@media (min-width: 768px) {{ table {{ font-size:15px; border-radius:14px; }} }}
-th{{ background:rgba(0,166,126,.10); color:var(--text); padding:8px 10px; font-weight:600; text-align:left; }}
-td{{ padding:8px 10px; border-bottom:1px solid var(--border); color:var(--text-dim); }}
+table{{ width:100%; border-collapse:collapse; margin:25px 0; background:var(--card); box-shadow:var(--shadow); border-radius:14px; overflow-x:auto; display:block; border:1px solid var(--card-border); }}
+th{{ background:rgba(0,166,126,.10); color:var(--text); padding:12px 14px; font-weight:600; text-align:left; }}
+td{{ padding:12px 14px; border-bottom:1px solid var(--border); color:var(--text-dim); }}
 tr:nth-child(even){{ background:rgba(20,20,50,.02); }}
+
+/* STILE SPECIFICO PER CELLULARE (SOLO MAX-WIDTH 767PX) */
+@media (max-width: 767px) {{
+    body {{ 
+        padding: 10px 8px 40px !important; 
+        font-size: 13px !important;
+        line-height: 1.5 !important;
+    }}
+    .intro h1 {{ font-size: 24px !important; }}
+    .intro .subtitle {{ font-size: 13px !important; }}
+    
+    .grafico {{ 
+        padding: 8px 2px !important; 
+        margin: 15px 0 !important; 
+        border-radius: 12px !important;
+    }}
+    .grafico .plotly-graph-div {{ 
+        aspect-ratio: 4 / 3; 
+        min-height: 220px !important; 
+    }}
+    .modebar-container {{ display: none !important; }}
+    
+    .testo {{ font-size: 13px !important; margin: 15px 0 !important; }}
+    h2 {{ font-size: 18px !important; margin-top: 30px !important; }}
+}}
 </style>
 </head>
 <body>
@@ -190,23 +195,39 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-// Adattamento responsive dei grafici Plotly: testo e titoli ridotti su mobile
+// Adattamento dinamico dei grafici
 function adaptPlotlyCharts() {
     var plots = document.querySelectorAll('.plotly-graph-div');
     var isMobile = window.innerWidth < 768;
     plots.forEach(function(p) {
         if (p._fullLayout) {
-            Plotly.relayout(p, {
-                'autosize': true,
-                'yaxis.automargin': true,
-                'xaxis.automargin': true,
-                'font.size': isMobile ? 9 : 13,
-                'title.font.size': isMobile ? 12 : 17,
-                'margin.l': isMobile ? 5 : 60,
-                'margin.r': isMobile ? 5 : 30,
-                'margin.t': isMobile ? 50 : 50,
-                'margin.b': isMobile ? 25 : 50
-            });
+            if (isMobile) {
+                // Configurazione ultra-compatta per Cellulare
+                Plotly.relayout(p, {
+                    'autosize': true,
+                    'yaxis.automargin': true,
+                    'xaxis.automargin': true,
+                    'font.size': 8,
+                    'title.font.size': 10,
+                    'margin.l': 5,
+                    'margin.r': 5,
+                    'margin.t': 45,
+                    'margin.b': 20
+                });
+            } else {
+                // Configurazione ORIGINALE per Computer
+                Plotly.relayout(p, {
+                    'autosize': true,
+                    'yaxis.automargin': true,
+                    'xaxis.automargin': true,
+                    'font.size': 13,
+                    'title.font.size': 16,
+                    'margin.l': 50,
+                    'margin.r': 30,
+                    'margin.t': 50,
+                    'margin.b': 50
+                });
+            }
             Plotly.Plots.resize(p);
         }
     });
