@@ -97,7 +97,7 @@ def generate_exact_html():
 :root{{ --bg:#F6F7FB; --card:#FFFFFF; --card-border:#E4E6F0; --primary:#00A67E; --text:#181C2A; --text-dim:#5C6274; --border:#E4E6F0; --shadow:0 20px 45px rgba(30,30,60,.08); --grad: linear-gradient(120deg, #00A67E 0%, #00C49A 100%); }}
 *{{ box-sizing:border-box; }}
 
-/* STILE BASE (ORIGINALE PER COMPUTER) */
+/* STILE BASE (PERFETTO PER COMPUTER) */
 body{{ 
     background: radial-gradient(circle at 15% 0%, rgba(0,166,126,.08), transparent 40%), radial-gradient(circle at 90% 10%, rgba(15,169,140,.07), transparent 45%), var(--bg); 
     font-family:'Inter',sans-serif; 
@@ -140,29 +140,15 @@ th{{ background:rgba(0,166,126,.10); color:var(--text); padding:12px 14px; font-
 td{{ padding:12px 14px; border-bottom:1px solid var(--border); color:var(--text-dim); }}
 tr:nth-child(even){{ background:rgba(20,20,50,.02); }}
 
-/* STILE SPECIFICO PER CELLULARE (SOLO MAX-WIDTH 767PX) */
+/* APPLICA LO ZOOM AL 65% SOLO SU DISPOSITIVI MOBILI (<768px) */
 @media (max-width: 767px) {{
     body {{ 
-        padding: 10px 8px 40px !important; 
-        font-size: 13px !important;
-        line-height: 1.5 !important;
-    }}
-    .intro h1 {{ font-size: 24px !important; }}
-    .intro .subtitle {{ font-size: 13px !important; }}
-    
-    .grafico {{ 
-        padding: 8px 2px !important; 
-        margin: 15px 0 !important; 
-        border-radius: 12px !important;
-    }}
-    .grafico .plotly-graph-div {{ 
-        aspect-ratio: 4 / 3; 
-        min-height: 220px !important; 
+        zoom: 65%;
+        -moz-transform: scale(0.65);
+        -moz-transform-origin: 0 0;
+        padding: 15px 10px 40px !important; 
     }}
     .modebar-container {{ display: none !important; }}
-    
-    .testo {{ font-size: 13px !important; margin: 15px 0 !important; }}
-    h2 {{ font-size: 18px !important; margin-top: 30px !important; }}
 }}
 </style>
 </head>
@@ -195,39 +181,22 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-// Adattamento dinamico dei grafici
+// Adattamento responsive dei grafici Plotly
 function adaptPlotlyCharts() {
     var plots = document.querySelectorAll('.plotly-graph-div');
-    var isMobile = window.innerWidth < 768;
     plots.forEach(function(p) {
         if (p._fullLayout) {
-            if (isMobile) {
-                // Configurazione ultra-compatta per Cellulare
-                Plotly.relayout(p, {
-                    'autosize': true,
-                    'yaxis.automargin': true,
-                    'xaxis.automargin': true,
-                    'font.size': 8,
-                    'title.font.size': 10,
-                    'margin.l': 5,
-                    'margin.r': 5,
-                    'margin.t': 45,
-                    'margin.b': 20
-                });
-            } else {
-                // Configurazione ORIGINALE per Computer
-                Plotly.relayout(p, {
-                    'autosize': true,
-                    'yaxis.automargin': true,
-                    'xaxis.automargin': true,
-                    'font.size': 13,
-                    'title.font.size': 16,
-                    'margin.l': 50,
-                    'margin.r': 30,
-                    'margin.t': 50,
-                    'margin.b': 50
-                });
-            }
+            Plotly.relayout(p, {
+                'autosize': true,
+                'yaxis.automargin': true,
+                'xaxis.automargin': true,
+                'font.size': 12,
+                'title.font.size': 15,
+                'margin.l': 40,
+                'margin.r': 20,
+                'margin.t': 50,
+                'margin.b': 40
+            });
             Plotly.Plots.resize(p);
         }
     });
