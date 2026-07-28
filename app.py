@@ -114,11 +114,28 @@ h1,h2,h3{{ font-family:'Space Grotesk',sans-serif; scroll-margin-top: 40px; }}
 #indice a:hover{{ color:var(--primary); transform:translateX(3px); }}
 .testo{{ margin:25px 0; color:var(--text-dim); word-wrap: break-word; }}
 .testo strong{{ color:var(--text); font-weight:600; }}
+
+/* GRAFICI */
 .grafico{{ background:var(--card); padding:12px 6px; margin:25px 0; border-radius:18px; box-shadow:var(--shadow); border:1px solid var(--card-border); position:relative; width:100%; overflow:hidden; }}
 @media (min-width: 768px) {{ .grafico {{ padding:20px; margin:40px 0; border-radius:20px; }} }}
 .grafico:before{{ content:""; position:absolute; top:0; left:0; right:0; height:4px; background:var(--grad); }}
-.grafico .plotly-graph-div {{ width: 100% !important;aspect-ratio: 4 / 3;height: auto !important;min-height: 320px;max-height: 520px;}}
+.grafico .plotly-graph-div {{ 
+    width: 100% !important; 
+    aspect-ratio: 4 / 3; 
+    height: auto !important; 
+    min-height: 320px; 
+    max-height: 520px; 
+    margin: 0 auto !important; 
+}}
 .grafico svg {{ max-width: 100% !important; }}
+
+/* Nasconde la modebar di Plotly da mobile per evitare sovrapposizioni con il titolo */
+@media (max-width: 767px) {
+    .modebar-container {
+        display: none !important;
+    }
+}
+
 h2{{ margin-top:40px; margin-bottom:18px; font-size:22px; font-weight:700; color:var(--text); border-bottom:1px solid var(--border); padding-bottom:10px; }}
 @media (min-width: 768px) {{ h2 {{ font-size:28px; margin-top:60px; margin-bottom:20px; padding-bottom:12px; }} }}
 table{{ width:100%; border-collapse:collapse; margin:25px 0; background:var(--card); box-shadow:var(--shadow); border-radius:14px; overflow-x:auto; display:block; border:1px solid var(--card-border); }}
@@ -156,7 +173,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-// Adattamento responsive dei grafici Plotly
+// Adattamento responsive dei grafici Plotly con margine superiore aumentato su mobile
 function adaptPlotlyCharts() {
     var plots = document.querySelectorAll('.plotly-graph-div');
     var isMobile = window.innerWidth < 768;
@@ -169,7 +186,7 @@ function adaptPlotlyCharts() {
                 'font.size': isMobile ? 10 : 13,
                 'margin.l': isMobile ? 10 : 60,
                 'margin.r': isMobile ? 10 : 30,
-                'margin.t': isMobile ? 35 : 50,
+                'margin.t': isMobile ? 65 : 50, // Margine superiore per dare spazio al titolo su mobile
                 'margin.b': isMobile ? 35 : 50
             });
             Plotly.Plots.resize(p);
@@ -231,4 +248,4 @@ window.addEventListener('resize', adaptPlotlyCharts);
 
 # Genera e carica l'HTML completo
 html_code = generate_exact_html()
-components.html(html_code, height=3500, scrolling=True)
+components.html(html_code, height=5000, scrolling=True)
