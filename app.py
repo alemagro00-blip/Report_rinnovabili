@@ -140,24 +140,29 @@ th{{ background:rgba(0,166,126,.10); color:var(--text); padding:12px 14px; font-
 td{{ padding:12px 14px; border-bottom:1px solid var(--border); color:var(--text-dim); }}
 tr:nth-child(even){{ background:rgba(20,20,50,.02); }}
 
-/* STILE SPECIFICO E LEGGERO PER CELLULARE (<768px) */
+/* STILE SPECIFICO PER CELLULARE (SOLO MAX-WIDTH 767PX) */
 @media (max-width: 767px) {{
     body {{ 
-        padding: 12px 8px 40px !important; 
-        font-size: 14px !important;
+        padding: 10px 8px 40px !important; 
+        font-size: 13px !important;
         line-height: 1.5 !important;
     }}
-    .intro h1 {{ font-size: 26px !important; }}
+    .intro h1 {{ font-size: 24px !important; }}
     .intro .subtitle {{ font-size: 13px !important; }}
     
     .grafico {{ 
-        padding: 8px 4px !important; 
-        margin: 20px 0 !important; 
+        padding: 8px 2px !important; 
+        margin: 15px 0 !important; 
         border-radius: 12px !important;
     }}
+    .grafico .plotly-graph-div {{ 
+        aspect-ratio: 4 / 3; 
+        min-height: 220px !important; 
+    }}
     .modebar-container {{ display: none !important; }}
-    .testo {{ font-size: 14px !important; margin: 15px 0 !important; }}
-    h2 {{ font-size: 20px !important; margin-top: 35px !important; }}
+    
+    .testo {{ font-size: 13px !important; margin: 15px 0 !important; }}
+    h2 {{ font-size: 18px !important; margin-top: 30px !important; }}
 }}
 </style>
 </head>
@@ -197,17 +202,17 @@ function adaptPlotlyCharts() {
     plots.forEach(function(p) {
         if (p._fullLayout) {
             if (isMobile) {
-                // Configurazione compatta per Cellulare
+                // Configurazione ultra-compatta per Cellulare
                 Plotly.relayout(p, {
                     'autosize': true,
                     'yaxis.automargin': true,
                     'xaxis.automargin': true,
-                    'font.size': 10,
-                    'title.font.size': 12,
-                    'margin.l': 10,
-                    'margin.r': 10,
+                    'font.size': 8,
+                    'title.font.size': 10,
+                    'margin.l': 5,
+                    'margin.r': 5,
                     'margin.t': 45,
-                    'margin.b': 25
+                    'margin.b': 20
                 });
             } else {
                 // Configurazione ORIGINALE per Computer
