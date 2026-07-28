@@ -7,7 +7,7 @@ from markdown import markdown
 # Configurazione della pagina Streamlit per occupare tutto lo schermo
 st.set_page_config(
     page_title="Analisi Rinnovabili",
-    page_icon="⚡",
+    page_icon="🍃",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
@@ -109,7 +109,7 @@ h1,h2,h3{{ font-family:'Space Grotesk',sans-serif; scroll-margin-top: 40px; }}
 #indice h2{{ margin:0 0 16px 0!important; font-size:12px!important; font-weight:700!important; letter-spacing:1.5px; text-transform:uppercase; color:var(--text-dim)!important; border:none!important; padding:0!important; }}
 #indice ul{{ list-style:none; margin:0; padding:0; display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:12px 20px; }}
 #indice li{{ margin:0; }}
-#indice a{{ color:var(--text); font-weight:600; font-size:14px; text-decoration:none; display:flex; align-items:center; gap:8px; transition:.2s ease; }}
+#indice a{{ color:var(--text); font-weight:600; font-size:14px; text-decoration:none; display:flex; align-items:center; gap:8px; transition:.2s ease; cursor:pointer; }}
 #indice a:before{{ content:"→"; color:var(--primary); font-weight:700; }}
 #indice a:hover{{ color:var(--primary); transform:translateX(3px); }}
 .testo{{ margin:25px 0; color:var(--text-dim); word-wrap: break-word; }}
@@ -139,6 +139,24 @@ tr:nth-child(even){{ background:rgba(20,20,50,.02); }}
 
     html_footer = """
 <script>
+// Scroll smooth per l'indice
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('#indice a').forEach(function(anchor) {
+        anchor.addEventListener('click', function(e) {
+            e.preventDefault();
+            var targetId = this.getAttribute('href').substring(1);
+            var targetElement = document.getElementById(targetId);
+            if (targetElement) {
+                targetElement.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        });
+    });
+});
+
+// Adattamento responsive dei grafici Plotly
 function adaptPlotlyCharts() {
     var plots = document.querySelectorAll('.plotly-graph-div');
     var isMobile = window.innerWidth < 768;
@@ -211,6 +229,6 @@ window.addEventListener('resize', adaptPlotlyCharts);
 
     return html_header + body_content + html_footer
 
-# Inseriamo l'HTML generato all'interno di Streamlit
+# Genera e carica l'HTML completo
 html_code = generate_exact_html()
 components.html(html_code, height=3500, scrolling=True)
