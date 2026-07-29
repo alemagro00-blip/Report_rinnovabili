@@ -29,7 +29,7 @@ def is_mobile():
 IS_MOBILE = is_mobile()
 
 # =========================================================
-# STILE GRAFICO (tema verde, font moderni)
+# STILE GRAFICO (tema verde, font moderni, fix layout mobile)
 # =========================================================
 st.markdown("""
 <style>
@@ -144,16 +144,23 @@ hr.divider {
 
 footer {visibility: hidden;}
 
-/* Adattamento mobile */
+/* FIX MOBILE CENTRATURA E CONTENITORE GRAFICI */
 @media (max-width: 640px) {
     .main .block-container {
-        padding-left: 0.3rem;
-        padding-right: 0.3rem;
-        padding-top: 1.2rem;
+        padding-left: 0.2rem !important;
+        padding-right: 0.2rem !important;
+        padding-top: 1.0rem !important;
     }
 }
 
-.stPlotlyChart, .js-plotly-plot, .plot-container {
+.stPlotlyChart {
+    width: 100% !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+}
+
+.stPlotlyChart > div {
     width: 100% !important;
 }
 </style>
@@ -249,28 +256,42 @@ def assegna_colore(valore):
         return "#B7CDB5"
 
 df_last["colore"] = df_last["renewables_share_energy"].apply(assegna_colore)
-df_last["country_label"] = df_last["country"] + "  —"
+
+# Abbreviamo leggermente i nomi solo su mobile per risparmiare spazio sull'asse Y
+if IS_MOBILE:
+    df_last["country_label"] = df_last["country"].str.replace("Dominican Republic", "Dom. Rep.")
+else:
+    df_last["country_label"] = df_last["country"]
 
 fig1 = px.bar(
     df_last, x="renewables_share_energy", y="country_label", orientation="h",
     text="renewables_share_energy", color="colore", color_discrete_map="identity"
 )
 
-# Su mobile manteniamo un'altezza idonea alle barre orizzontali ma riduciamo i margini
 fig1_height = max(420, len(df_last) * 18) if IS_MOBILE else max(560, len(df_last) * 24)
 
+# Calcolo del massimo per dare extra spazio a destra ed evitare tagli del testo (es. 80.5%)
+max_val = df_last["renewables_share_energy"].max()
+
 fig1.update_traces(
-    texttemplate="%{text:.1f}%", textposition="outside",
-    textfont=dict(size=9 if IS_MOBILE else 12, color="#555555"), marker_line_width=0, width=0.6
+    texttemplate="%{text:.1f}%", textposition="outside", cliponaxis=False,
+    textfont=dict(size=8.5 if IS_MOBILE else 11, color="#333333"), marker_line_width=0, width=0.65
 )
 fig1.update_layout(
-    title={"text": f"<b>Chi guida la transizione<br>energetica ({ultimo_anno})</b>", "x": 0.02, "xanchor": "left", "font": dict(size=title_font_size)},
+    title={"text": f"<b>Chi guida la transizione<br>energetica ({ultimo_anno})</b>", "x": 0.0, "xanchor": "left", "font": dict(size=title_font_size)},
     xaxis_title="Quota di energia rinnovabile (%)", yaxis_title="",
     template="plotly_white", height=fig1_height, showlegend=False,
-    margin=dict(l=75 if IS_MOBILE else 110, r=40 if IS_MOBILE else 90, t=55 if IS_MOBILE else 80, b=35)
+    # Margine destro aumentato (r=55) per ospitare comodamente l'etichetta fuori barra
+    margin=dict(l=5 if IS_MOBILE else 100, r=55 if IS_MOBILE else 80, t=55 if IS_MOBILE else 80, b=35)
 )
-fig1.update_xaxes(showgrid=True, gridcolor="rgba(0,0,0,0.12)", automargin=True)
-fig1.update_yaxes(showgrid=False, categoryorder="array", categoryarray=df_last["country_label"], automargin=True, tickfont=dict(size=9 if IS_MOBILE else 12))
+fig1.update_xaxes(
+    showgrid=True, gridcolor="rgba(0,0,0,0.12)", automargin=True,
+    range=[0, max_val * 1.15 if IS_MOBILE else max_val * 1.1] # Estensione del range a destra
+)
+fig1.update_yaxes(
+    showgrid=False, categoryorder="array", categoryarray=df_last["country_label"], 
+    automargin=True, tickfont=dict(size=8.5 if IS_MOBILE else 11)
+)
 st.plotly_chart(fig1, use_container_width=True, config=PLOTLY_CONFIG)
 
 st.markdown(
@@ -293,17 +314,18 @@ fig2 = px.line(
     markers=True, color_discrete_sequence=palette_verde
 )
 
-# Fig 2: Altezza ridotta per un formato più rettangolare/orizzontale su mobile
 fig2_height = 300 if IS_MOBILE else 580
 
 fig2.update_traces(line=dict(width=2), marker=dict(size=5 if IS_MOBILE else 7))
 fig2.update_layout(
-    title={"text": "<b>Evoluzione della quota di rinnovabili<br>nei paesi leader</b>", "x": 0.02, "font": dict(size=title_font_size)},
-    xaxis_title="Anno", yaxis_title="Quota rinnovabili (%)",
+    title={"text": "<b>Evoluzione della quota di rinnovabili<br>nei paesi leader</b>", "x": 0.0, "xanchor": "left", "font": dict(size=title_font_size)},
+    xaxis_title="Anno", yaxis_title="Quota (%)",
     template="plotly_white", height=fig2_height, hovermode="x unified",
-    legend=dict(orientation="h", yanchor="top", y=-0.35 if IS_MOBILE else -0.18, xanchor="center", x=0.5, title="", font=dict(size=legend_font_size)),
-    margin=dict(l=10 if IS_MOBILE else 40, r=10 if IS_MOBILE else 40, t=55 if IS_MOBILE else 85, b=65 if IS_MOBILE else 90)
+    legend=dict(orientation="h", yanchor="top", y=-0.38 if IS_MOBILE else -0.18, xanchor="center", x=0.5, title="", font=dict(size=legend_font_size)),
+    margin=dict(l=10 if IS_MOBILE else 40, r=20 if IS_MOBILE else 40, t=55 if IS_MOBILE else 85, b=65 if IS_MOBILE else 90)
 )
+fig2.update_xaxes(showgrid=True, gridcolor="rgba(0,0,0,0.12)", automargin=True)
+fig2.update_yaxes(showgrid=True, gridcolor="rgba(0,0,0,0.12)", automargin=True)
 st.plotly_chart(fig2, use_container_width=True, config=PLOTLY_CONFIG)
 
 st.markdown(
@@ -344,11 +366,11 @@ fig3_height = 290 if IS_MOBILE else 550
 fig3.update_traces(line=dict(width=2), marker=dict(size=5 if IS_MOBILE else 7))
 fig3.update_traces(selector=dict(name="Italy"), line=dict(width=3), marker=dict(size=7 if IS_MOBILE else 9))
 fig3.update_layout(
-    title={"text": "<b>Italia vs grandi paesi europei</b>", "x": 0.02, "xanchor": "left", "font": dict(size=title_font_size)},
-    xaxis_title="Anno", yaxis_title="Quota rinnovabili (%)",
+    title={"text": "<b>Italia vs grandi paesi europei</b>", "x": 0.0, "xanchor": "left", "font": dict(size=title_font_size)},
+    xaxis_title="Anno", yaxis_title="Quota (%)",
     template="plotly_white", height=fig3_height, hovermode="x unified",
-    legend=dict(orientation="h", yanchor="top", y=-0.35 if IS_MOBILE else -0.18, xanchor="center", x=0.5, title="", font=dict(size=legend_font_size)),
-    margin=dict(l=10 if IS_MOBILE else 70, r=10 if IS_MOBILE else 50, t=50 if IS_MOBILE else 70, b=60 if IS_MOBILE else 90)
+    legend=dict(orientation="h", yanchor="top", y=-0.38 if IS_MOBILE else -0.18, xanchor="center", x=0.5, title="", font=dict(size=legend_font_size)),
+    margin=dict(l=10 if IS_MOBILE else 70, r=20 if IS_MOBILE else 50, t=50 if IS_MOBILE else 70, b=60 if IS_MOBILE else 90)
 )
 fig3.update_xaxes(showgrid=True, gridcolor="rgba(0,0,0,0.12)", automargin=True)
 fig3.update_yaxes(showgrid=True, gridcolor="rgba(0,0,0,0.12)", automargin=True)
@@ -399,14 +421,14 @@ fig4_height = 340 if IS_MOBILE else 620
 fig4.update_traces(texttemplate="%{text:.0f}%", textposition="inside", textfont=dict(size=8 if IS_MOBILE else 11))
 fig4.update_layout(
     barmode="stack",
-    title={"text": f"<b>Da cosa dipende ancora<br>il sistema energetico? ({ultimo_anno})</b>", "x": 0.02, "xanchor": "left", "font": dict(size=title_font_size)},
+    title={"text": f"<b>Da cosa dipende ancora<br>il sistema energetico? ({ultimo_anno})</b>", "x": 0.0, "xanchor": "left", "font": dict(size=title_font_size)},
     xaxis_title="", yaxis_title="Quota mix (%)",
     template="plotly_white", height=fig4_height,
     legend=dict(orientation="h", yanchor="top", y=-0.42 if IS_MOBILE else -0.28, xanchor="center", x=0.5, title="", font=dict(size=legend_font_size)),
-    margin=dict(l=10 if IS_MOBILE else 60, r=10 if IS_MOBILE else 30, t=55 if IS_MOBILE else 85, b=85 if IS_MOBILE else 110),
+    margin=dict(l=10 if IS_MOBILE else 60, r=15 if IS_MOBILE else 30, t=55 if IS_MOBILE else 85, b=85 if IS_MOBILE else 110),
     uniformtext_minsize=6 if IS_MOBILE else 8, uniformtext_mode="hide"
 )
-fig4.update_xaxes(tickangle=-50 if IS_MOBILE else -40, automargin=True, tickfont=dict(size=9 if IS_MOBILE else 11))
+fig4.update_xaxes(tickangle=-50 if IS_MOBILE else -40, automargin=True, tickfont=dict(size=8.5 if IS_MOBILE else 11))
 fig4.update_yaxes(range=[0, 100], showgrid=True, gridcolor="rgba(0,0,0,0.12)", automargin=True)
 st.plotly_chart(fig4, use_container_width=True, config=PLOTLY_CONFIG)
 
@@ -455,11 +477,11 @@ fig5_height = 280 if IS_MOBILE else 550
 
 fig5.update_traces(line=dict(width=2), marker=dict(size=5 if IS_MOBILE else 7))
 fig5.update_layout(
-    title={"text": "<b>Chi cresce più in fretta: solare o eolico?</b>", "x": 0.02, "xanchor": "left", "font": dict(size=title_font_size)},
+    title={"text": "<b>Chi cresce più in fretta: solare o eolico?</b>", "x": 0.0, "xanchor": "left", "font": dict(size=title_font_size)},
     xaxis_title="Anno", yaxis_title="Quota media (%)",
     template="plotly_white", height=fig5_height, hovermode="x unified",
-    legend=dict(orientation="h", yanchor="top", y=-0.32 if IS_MOBILE else -0.18, xanchor="center", x=0.5, title="", font=dict(size=legend_font_size)),
-    margin=dict(l=10 if IS_MOBILE else 40, r=10 if IS_MOBILE else 40, t=50 if IS_MOBILE else 75, b=55 if IS_MOBILE else 90)
+    legend=dict(orientation="h", yanchor="top", y=-0.35 if IS_MOBILE else -0.18, xanchor="center", x=0.5, title="", font=dict(size=legend_font_size)),
+    margin=dict(l=10 if IS_MOBILE else 40, r=20 if IS_MOBILE else 40, t=50 if IS_MOBILE else 75, b=55 if IS_MOBILE else 90)
 )
 fig5.update_xaxes(showgrid=True, gridcolor="rgba(0,0,0,0.12)", automargin=True)
 fig5.update_yaxes(showgrid=True, gridcolor="rgba(0,0,0,0.12)", automargin=True)
@@ -494,16 +516,23 @@ fig6 = px.bar(
 )
 
 fig6_height = 260 if IS_MOBILE else 450
+max_val_r = rinnovabili_media["Quota media globale (%)"].max()
 
-fig6.update_traces(texttemplate="%{text:.2f}%", textposition="outside", marker_line_width=0, textfont=dict(size=9 if IS_MOBILE else 12))
+fig6.update_traces(
+    texttemplate="%{text:.2f}%", textposition="outside", cliponaxis=False,
+    marker_line_width=0, textfont=dict(size=8.5 if IS_MOBILE else 11)
+)
 fig6.update_layout(
-    title={"text": f"<b>Quali rinnovabili<br>contano davvero? ({ultimo_anno})</b>", "x": 0.02, "xanchor": "left", "font": dict(size=title_font_size)},
+    title={"text": f"<b>Quali rinnovabili<br>contano davvero? ({ultimo_anno})</b>", "x": 0.0, "xanchor": "left", "font": dict(size=title_font_size)},
     xaxis_title="Quota media (%)", yaxis_title="",
     template="plotly_white", height=fig6_height, showlegend=False, 
-    margin=dict(l=85 if IS_MOBILE else 140, r=40 if IS_MOBILE else 100, t=55 if IS_MOBILE else 85, b=35 if IS_MOBILE else 50)
+    margin=dict(l=5 if IS_MOBILE else 140, r=50 if IS_MOBILE else 100, t=55 if IS_MOBILE else 85, b=35 if IS_MOBILE else 50)
 )
-fig6.update_xaxes(showgrid=True, gridcolor="rgba(0,0,0,0.12)", automargin=True)
-fig6.update_yaxes(automargin=True, tickfont=dict(size=9 if IS_MOBILE else 12))
+fig6.update_xaxes(
+    showgrid=True, gridcolor="rgba(0,0,0,0.12)", automargin=True,
+    range=[0, max_val_r * 1.2 if IS_MOBILE else max_val_r * 1.15]
+)
+fig6.update_yaxes(automargin=True, tickfont=dict(size=8.5 if IS_MOBILE else 11))
 st.plotly_chart(fig6, use_container_width=True, config=PLOTLY_CONFIG)
 
 st.markdown(
@@ -562,10 +591,10 @@ fig7.add_trace(go.Scatter(
 fig7_height = 300 if IS_MOBILE else 580
 
 fig7.update_layout(
-    title={"text": "<b>Più ricchi, più energivori?</b>", "x": 0.02, "xanchor": "left", "font": dict(size=title_font_size)},
+    title={"text": "<b>Più ricchi, più energivori?</b>", "x": 0.0, "xanchor": "left", "font": dict(size=title_font_size)},
     xaxis_title="PIL pro capite ($)", yaxis_title="Consumo pro capite (kWh)",
     template="plotly_white", height=fig7_height,
-    margin=dict(l=10 if IS_MOBILE else 40, r=10 if IS_MOBILE else 40, t=50 if IS_MOBILE else 75, b=35 if IS_MOBILE else 50)
+    margin=dict(l=10 if IS_MOBILE else 40, r=20 if IS_MOBILE else 40, t=50 if IS_MOBILE else 75, b=35 if IS_MOBILE else 50)
 )
 fig7.update_xaxes(showgrid=True, gridcolor="rgba(0,0,0,0.12)", automargin=True)
 fig7.update_yaxes(showgrid=True, gridcolor="rgba(0,0,0,0.12)", automargin=True)
@@ -619,7 +648,7 @@ fig8_height = 280 if IS_MOBILE else 600
 
 fig8.update_traces(marker_line_color="#B0B0B0", marker_line_width=0.6)
 fig8.update_layout(
-    title={"text": "<b>La transizione energetica<br>vista dal mondo, oggi</b>", "x": 0.02, "xanchor": "left",
+    title={"text": "<b>La transizione energetica<br>vista dal mondo, oggi</b>", "x": 0.0, "xanchor": "left",
            "font": dict(size=title_font_size, color="#1B4332")},
     template="plotly_white", height=fig8_height, margin=dict(t=50 if IS_MOBILE else 90, b=40, l=0, r=0),
     geo=dict(
@@ -628,7 +657,7 @@ fig8.update_layout(
         countrycolor="#B0B0B0", projection_type="natural earth", bgcolor="rgba(0,0,0,0)"
     ),
     paper_bgcolor="rgba(0,0,0,0)",
-    legend=dict(orientation="h", yanchor="bottom", y=-0.25 if IS_MOBILE else -0.1, xanchor="center", x=0.5, title="", font=dict(size=legend_font_size))
+    legend=dict(orientation="h", yanchor="bottom", y=-0.28 if IS_MOBILE else -0.1, xanchor="center", x=0.5, title="", font=dict(size=legend_font_size))
 )
 st.plotly_chart(fig8, use_container_width=True, config=PLOTLY_CONFIG)
 
@@ -640,7 +669,7 @@ st.markdown('<hr class="divider">', unsafe_allow_html=True)
 st.header("📌 Conclusioni", anchor="conclusioni")
 
 st.markdown(
-    '<div class="section-intro">Mettendo insieme tutte las analisi, il quadro che emerge non è '
+    '<div class="section-intro">Mettendo insieme tutte le analisi, il quadro che emerge non è '
     '"il mondo si sta convertendo alle rinnovabili" né "il mondo dipende ancora troppo dai fossili" — '
     'sono vere entrambe le cose insieme, a seconda di dove si guarda.</div>',
     unsafe_allow_html=True
