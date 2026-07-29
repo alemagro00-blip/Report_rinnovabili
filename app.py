@@ -19,22 +19,30 @@ st.set_page_config(
 # ==============================================================================
 
 def forza_sfondo_bianco(fig):
+    # 1. Sfondo generale e font base
     fig.update_layout(
         paper_bgcolor="#ffffff",
         plot_bgcolor="#ffffff",
         font=dict(color="#1e293b", family="Inter, sans-serif"),
-        title=dict(font=dict(color="#1B4332")),
+        title_font=dict(color="#1B4332"),
+        legend_font=dict(color="#1e293b")
     )
-    fig.update_xaxes(
-        tickfont=dict(color="#334155"),
-        title=dict(font=dict(color="#1e293b"))
-    )
-    fig.update_yaxes(
-        tickfont=dict(color="#334155"),
-        title=dict(font=dict(color="#1e293b"))
-    )
-    return fig
     
+    # 2. Forzatura capillare su TUTTI gli assi X (etichette + titoli + griglia)
+    fig.for_each_xaxis(lambda axis: axis.update(
+        tickfont=dict(color="#2D3A34"),
+        title_font=dict(color="#1B4332"),
+        gridcolor="rgba(0,0,0,0.1)"
+    ))
+    
+    # 3. Forzatura capillare su TUTTI gli assi Y (etichette + titoli + griglia)
+    fig.for_each_yaxis(lambda axis: axis.update(
+        tickfont=dict(color="#2D3A34"),
+        title_font=dict(color="#1B4332"),
+        gridcolor="rgba(0,0,0,0.1)"
+    ))
+    
+    return fig
 # =========================================================
 # RILEVAMENTO DISPOSITIVO (Mobile vs Desktop)
 # =========================================================
