@@ -759,3 +759,20 @@ st.markdown(
     'I paesi più ricchi consumano molta più energia per abitante, ma i giganti demografici in forte sviluppo '
     'rappresentano il vero ago della bilancia per la domanda globale nei prossimi decenni.</div>', unsafe_allow_html=True
 )
+
+# --- RISOLUZIONE AUTOFOCUS MAPPA ---
+st.components.v1.html("""
+    <script>
+        // Funzione per forzare lo scroll in cima
+        function resetScroll() {
+            window.parent.postMessage({type: 'streamlit:scroll', to: 0}, '*');
+            window.parent.scrollTo(0, 0);
+            window.scrollTo(0, 0);
+        }
+
+        // Esegue subito e dopo un breve ritardo per neutralizzare il caricamento della mappa
+        resetScroll();
+        setTimeout(resetScroll, 300);
+        setTimeout(resetScroll, 800);
+    </script>
+""", height=0)
