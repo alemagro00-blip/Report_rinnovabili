@@ -19,28 +19,27 @@ st.set_page_config(
 # ==============================================================================
 
 def forza_sfondo_bianco(fig):
-    # Applica prima il tema bianco nativo di Plotly
-    fig.update_layout(template="plotly_white")
-    
-    # Poi applica la configurazione specifica dei colori scuri
     fig.update_layout(
         paper_bgcolor="#ffffff",
         plot_bgcolor="#ffffff",
+        # Forziamo il colore del font a livello globale del grafico
         font=dict(color="#1e293b", family="Inter, sans-serif"),
-        title=dict(font=dict(color="#1B4332", size=16)),
-        legend=dict(font=dict(color="#1e293b")),
+        title=dict(font=dict(color="#1B4332")),
+        legend=dict(font=dict(color="#1e293b"))
     )
     
-    # Forza colore scuro sui tick
+    # Sovrascriviamo gli assi X e Y per evitare che Plotly li sbianchi
     fig.update_xaxes(
         tickfont=dict(color="#1e293b"),
         title=dict(font=dict(color="#1e293b")),
-        gridcolor="#f0f0f0"
+        color="#1e293b",
+        gridcolor="#e2e8f0"
     )
     fig.update_yaxes(
         tickfont=dict(color="#1e293b"),
         title=dict(font=dict(color="#1e293b")),
-        gridcolor="#f0f0f0"
+        color="#1e293b",
+        gridcolor="#e2e8f0"
     )
     return fig
 # =========================================================
