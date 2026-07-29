@@ -39,6 +39,12 @@ html, body, [class*="css"] {
     font-family: 'Inter', sans-serif;
 }
 
+/* Sfondo dell'app chiaro */
+.stApp {
+    background-color: #ffffff !important;
+    color: #1e293b !important;
+}
+
 .main .block-container {
     max-width: 1080px;
     padding-top: 2.2rem;
