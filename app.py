@@ -1,6 +1,8 @@
 import streamlit as st
 import pandas as pd
+import numpy as np
 import plotly.express as px
+import plotly.graph_objects as go
 
 # =========================================================
 # CONFIGURAZIONE PAGINA
@@ -475,13 +477,26 @@ df_gdp["etichetta"] = df_gdp.apply(
 
 fig7 = px.scatter(
     df_gdp, x="gdp_per_capita", y="energy_per_capita", size="population",
-    hover_name="country", text="etichetta", log_x=True, trendline="ols",
+    hover_name="country", text="etichetta", log_x=True,
     color_discrete_sequence=["#40916C"]
 )
 fig7.update_traces(
     marker=dict(opacity=0.65, line=dict(width=0.5, color="white")),
     textposition="top center", textfont=dict(size=11, color="#2F3B45")
 )
+
+# Retta di tendenza calcolata a mano (regressione lineare su log10(gdp) vs energia),
+# per non dipendere da statsmodels che su alcuni ambienti Streamlit Cloud non si installa
+log_x = np.log10(df_gdp["gdp_per_capita"])
+coeff = np.polyfit(log_x, df_gdp["energy_per_capita"], 1)
+x_linea = np.linspace(log_x.min(), log_x.max(), 100)
+y_linea = coeff[0] * x_linea + coeff[1]
+
+fig7.add_trace(go.Scatter(
+    x=10 ** x_linea, y=y_linea, mode="lines",
+    line=dict(color="#1B4332", width=2, dash="dash"),
+    name="Tendenza", hoverinfo="skip", showlegend=False
+))
 fig7.update_layout(
     title={"text": "<b>Più ricchi, più energivori?</b>", "x": 0.02, "xanchor": "left"},
     xaxis_title="PIL pro capite (scala logaritmica, $)", yaxis_title="Consumo di energia pro capite (kWh)",
@@ -598,3 +613,4 @@ st.markdown(
     'Dati: Our World in Data — Energy Dataset · Elaborazione e grafici realizzati con Python, Pandas e Plotly</p>',
     unsafe_allow_html=True
 )
+
