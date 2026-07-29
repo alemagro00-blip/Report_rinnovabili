@@ -14,6 +14,13 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
+PLOTLY_CONFIG = {
+    'displayModeBar': False,         # Nasconde la barra degli strumenti Plotly
+    'scrollZoom': False,             # Disabilita lo zoom con la rotellina (blocca l'autofocus)
+    'doubleClick': 'reset',          # Disabilita il doppio click interattivo
+    'showAxisDragHandles': False,
+    'staticPlot': False              # Mantiene gli hover visibili senza dare focus
+}
 # --- FORZA LO SCROLL IN CIMA ALL'AVVIO ---
 st.markdown("<div id='top'></div>", unsafe_allow_html=True)
 st.html("""
@@ -720,6 +727,18 @@ fig8.update_layout(
     paper_bgcolor="#ffffff",
     legend=dict(orientation="h", yanchor="bottom", y=-0.28 if IS_MOBILE else -0.1, xanchor="center", x=0.5, title="", font=dict(size=legend_font_size))
 )
+
+# --- CSS ANTI-AUTOFOCUS MAPPA ---
+st.markdown("""
+    <style>
+        /* Previene l'autofocus di Plotly al caricamento */
+        .js-plotly-plot .plotly .user-select-none {
+            outline: none !important;
+        }
+    </style>
+""", unsafe_allow_html=True)
+
+# Disattiviamo l'interazione aggressiva con PLOTLY_CONFIG aggiornato
 st.plotly_chart(forza_sfondo_bianco(fig8), use_container_width=True, config=PLOTLY_CONFIG)
 
 st.markdown('<hr class="divider">', unsafe_allow_html=True)
