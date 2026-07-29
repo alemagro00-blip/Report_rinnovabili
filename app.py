@@ -92,6 +92,11 @@ html, body, [class*="css"] {
     color: #1e293b !important;
 }
 
+/* NASCONDE MENU, FOOTER ("Built with Streamlit") E HEADER */
+#MainMenu { visibility: hidden; }
+footer { visibility: hidden; }
+header { visibility: hidden; }
+
 .main .block-container {
     max-width: 1080px;
     padding-top: 2.2rem;
