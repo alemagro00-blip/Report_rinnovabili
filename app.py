@@ -7,6 +7,7 @@ import plotly.graph_objects as go
 # =========================================================
 # CONFIGURAZIONE PAGINA
 # =========================================================
+# 1. CONFIGURAZIONE
 st.set_page_config(
     page_title="La Corsa alle Rinnovabili",
     page_icon="🌱",
@@ -14,20 +15,25 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-PLOTLY_CONFIG = {
-    'displayModeBar': False,         # Nasconde la barra degli strumenti Plotly
-    'scrollZoom': False,             # Disabilita lo zoom con la rotellina (blocca l'autofocus)
-    'doubleClick': 'reset',          # Disabilita il doppio click interattivo
-    'showAxisDragHandles': False,
-    'staticPlot': False              # Mantiene gli hover visibili senza dare focus
-}
-# --- FORZA LO SCROLL IN CIMA ALL'AVVIO ---
-st.markdown("<div id='top'></div>", unsafe_allow_html=True)
-st.html("""
+# 2. BLOCCO ANTI-AUTOFOCUS (DISATTIVA SCROLLAUTOMATICO MAPPA)
+st.markdown("""
     <script>
+        window.HTMLElement.prototype.scrollIntoView = function() {};
+        if (window.parent) {
+            window.parent.scrollTo(0, 0);
+        }
         window.scrollTo(0, 0);
     </script>
-""")
+""", unsafe_allow_html=True)
+
+# 3. PLOTLY CONFIG
+PLOTLY_CONFIG = {
+    'displayModeBar': False,
+    'scrollZoom': False,
+    'doubleClick': 'reset',
+    'showAxisDragHandles': False,
+    'staticPlot': False
+}
 # =========================================================
 # FUNZIONE UNICA PER SFONDO BIANCO E TESTO SCURO SU PLOTLY
 # =========================================================
