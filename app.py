@@ -14,12 +14,11 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# ==============================================================================
-# FUNZIONI HELPER
-# ==============================================================================
-
+# =========================================================
+# FUNZIONE UNICA PER SFONDO BIANCO E TESTO SCURO SU PLOTLY
+# =========================================================
 def forza_sfondo_bianco(fig):
-    # 1. Reset completo del tema per evitare sovrascritture trasparenti
+    # 1. Reset completo del tema per evitare sovrascritture trasparenti o dark mode
     fig.update_layout(template=None)
     
     # 2. Impostazione colori di sfondo e font principale
@@ -34,31 +33,34 @@ def forza_sfondo_bianco(fig):
         )
     )
     
-    # 3. Forzatura NERO (#0f172a) su ASSE X (Numeri + Titolo + Linee)
+    # 3. Forzatura NERO/SCURO (#0f172a) su ASSE X (Numeri + Titolo + Linee)
     fig.update_xaxes(
         tickfont=dict(color="#0f172a", size=11),
         title=dict(font=dict(color="#0f172a", size=12)),
+        color="#0f172a",
         linecolor="#cbd5e1",
         gridcolor="#f1f5f9",
         zerolinecolor="#cbd5e1",
         showline=True
     )
     
-    # 4. Forzatura NERO (#0f172a) su ASSE Y (Numeri + Titolo + Linee)
+    # 4. Forzatura NERO/SCURO (#0f172a) su ASSE Y (Numeri + Titolo + Linee)
     fig.update_yaxes(
         tickfont=dict(color="#0f172a", size=11),
         title=dict(font=dict(color="#0f172a", size=12)),
+        color="#0f172a",
         linecolor="#cbd5e1",
         gridcolor="#f1f5f9",
         zerolinecolor="#cbd5e1",
         showline=True
     )
     
-    # 5. Forzatura su tutti gli assi interni (utilissimo per mappe e sotto-grafici)
+    # 5. Forzatura applicata a tutti gli sotto-assi interni (se presenti)
     fig.for_each_xaxis(lambda a: a.update(tickfont=dict(color="#0f172a"), title=dict(font=dict(color="#0f172a"))))
     fig.for_each_yaxis(lambda a: a.update(tickfont=dict(color="#0f172a"), title=dict(font=dict(color="#0f172a"))))
     
     return fig
+
 # =========================================================
 # RILEVAMENTO DISPOSITIVO (Mobile vs Desktop)
 # =========================================================
@@ -74,7 +76,7 @@ def is_mobile():
 IS_MOBILE = is_mobile()
 
 # =========================================================
-# STILE GRAFICO (tema verde, font moderni, fix layout mobile)
+# STILE GRAFICO (CSS personalizado)
 # =========================================================
 st.markdown("""
 <style>
@@ -219,15 +221,6 @@ footer {visibility: hidden;}
 
 PLOTLY_CONFIG = {"displayModeBar": False, "responsive": True}
 
-# Helper per applicare sfondo bianco e testo scuro a tutti i grafici Plotly
-def forza_sfondo_bianco(fig):
-    fig.update_layout(
-        paper_bgcolor="#ffffff",
-        plot_bgcolor="#ffffff",
-        font=dict(color="#1e293b")
-    )
-    return fig
-
 # =========================================================
 # CARICAMENTO E PULIZIA DATI
 # =========================================================
@@ -328,7 +321,6 @@ fig1 = px.bar(
 )
 
 fig1_height = max(420, len(df_last) * 18) if IS_MOBILE else max(560, len(df_last) * 24)
-
 max_val = df_last["renewables_share_energy"].max()
 
 fig1.update_traces(
@@ -338,7 +330,7 @@ fig1.update_traces(
 fig1.update_layout(
     title={"text": f"<b>Chi guida la transizione<br>energetica ({ultimo_anno})</b>", "x": 0.0, "xanchor": "left", "font": dict(size=title_font_size)},
     xaxis_title="Quota di energia rinnovabile (%)", yaxis_title="",
-    template="plotly_white", height=fig1_height, showlegend=False,
+    height=fig1_height, showlegend=False,
     margin=dict(l=5 if IS_MOBILE else 100, r=55 if IS_MOBILE else 80, t=55 if IS_MOBILE else 80, b=35)
 )
 fig1.update_xaxes(
@@ -377,7 +369,7 @@ fig2.update_traces(line=dict(width=2), marker=dict(size=5 if IS_MOBILE else 7))
 fig2.update_layout(
     title={"text": "<b>Evoluzione della quota di rinnovabili<br>nei paesi leader</b>", "x": 0.0, "xanchor": "left", "font": dict(size=title_font_size)},
     xaxis_title="Anno", yaxis_title="Quota (%)",
-    template="plotly_white", height=fig2_height, hovermode="x unified",
+    height=fig2_height, hovermode="x unified",
     legend=dict(orientation="h", yanchor="top", y=-0.38 if IS_MOBILE else -0.18, xanchor="center", x=0.5, title="", font=dict(size=legend_font_size)),
     margin=dict(l=10 if IS_MOBILE else 40, r=20 if IS_MOBILE else 40, t=55 if IS_MOBILE else 85, b=65 if IS_MOBILE else 90)
 )
@@ -425,7 +417,7 @@ fig3.update_traces(selector=dict(name="Italy"), line=dict(width=3), marker=dict(
 fig3.update_layout(
     title={"text": "<b>Italia vs grandi paesi europei</b>", "x": 0.0, "xanchor": "left", "font": dict(size=title_font_size)},
     xaxis_title="Anno", yaxis_title="Quota (%)",
-    template="plotly_white", height=fig3_height, hovermode="x unified",
+    height=fig3_height, hovermode="x unified",
     legend=dict(orientation="h", yanchor="top", y=-0.38 if IS_MOBILE else -0.18, xanchor="center", x=0.5, title="", font=dict(size=legend_font_size)),
     margin=dict(l=10 if IS_MOBILE else 70, r=20 if IS_MOBILE else 50, t=50 if IS_MOBILE else 70, b=60 if IS_MOBILE else 90)
 )
@@ -480,7 +472,7 @@ fig4.update_layout(
     barmode="stack",
     title={"text": f"<b>Da cosa dipende ancora<br>il sistema energetico? ({ultimo_anno})</b>", "x": 0.0, "xanchor": "left", "font": dict(size=title_font_size)},
     xaxis_title="", yaxis_title="Quota mix (%)",
-    template="plotly_white", height=fig4_height,
+    height=fig4_height,
     legend=dict(orientation="h", yanchor="top", y=-0.42 if IS_MOBILE else -0.28, xanchor="center", x=0.5, title="", font=dict(size=legend_font_size)),
     margin=dict(l=10 if IS_MOBILE else 60, r=15 if IS_MOBILE else 30, t=55 if IS_MOBILE else 85, b=85 if IS_MOBILE else 110),
     uniformtext_minsize=6 if IS_MOBILE else 8, uniformtext_mode="hide"
@@ -536,7 +528,7 @@ fig5.update_traces(line=dict(width=2), marker=dict(size=5 if IS_MOBILE else 7))
 fig5.update_layout(
     title={"text": "<b>Chi cresce più in fretta: solare o eolico?</b>", "x": 0.0, "xanchor": "left", "font": dict(size=title_font_size)},
     xaxis_title="Anno", yaxis_title="Quota media (%)",
-    template="plotly_white", height=fig5_height, hovermode="x unified",
+    height=fig5_height, hovermode="x unified",
     legend=dict(orientation="h", yanchor="top", y=-0.35 if IS_MOBILE else -0.18, xanchor="center", x=0.5, title="", font=dict(size=legend_font_size)),
     margin=dict(l=10 if IS_MOBILE else 40, r=20 if IS_MOBILE else 40, t=50 if IS_MOBILE else 75, b=55 if IS_MOBILE else 90)
 )
@@ -582,7 +574,7 @@ fig6.update_traces(
 fig6.update_layout(
     title={"text": f"<b>Quali rinnovabili<br>contano davvero? ({ultimo_anno})</b>", "x": 0.0, "xanchor": "left", "font": dict(size=title_font_size)},
     xaxis_title="Quota media (%)", yaxis_title="",
-    template="plotly_white", height=fig6_height, showlegend=False, 
+    height=fig6_height, showlegend=False, 
     margin=dict(l=5 if IS_MOBILE else 140, r=50 if IS_MOBILE else 100, t=55 if IS_MOBILE else 85, b=35 if IS_MOBILE else 50)
 )
 fig6.update_xaxes(
@@ -650,7 +642,7 @@ fig7_height = 300 if IS_MOBILE else 580
 fig7.update_layout(
     title={"text": "<b>Più ricchi, più energivori?</b>", "x": 0.0, "xanchor": "left", "font": dict(size=title_font_size)},
     xaxis_title="PIL pro capite ($)", yaxis_title="Consumo pro capite (kWh)",
-    template="plotly_white", height=fig7_height,
+    height=fig7_height,
     margin=dict(l=10 if IS_MOBILE else 40, r=20 if IS_MOBILE else 40, t=50 if IS_MOBILE else 75, b=35 if IS_MOBILE else 50)
 )
 fig7.update_xaxes(showgrid=True, gridcolor="rgba(0,0,0,0.12)", automargin=True)
@@ -707,7 +699,7 @@ fig8.update_traces(marker_line_color="#B0B0B0", marker_line_width=0.6)
 fig8.update_layout(
     title={"text": "<b>La transizione energetica<br>vista dal mondo, oggi</b>", "x": 0.0, "xanchor": "left",
            "font": dict(size=title_font_size, color="#1B4332")},
-    template="plotly_white", height=fig8_height, margin=dict(t=50 if IS_MOBILE else 90, b=40, l=0, r=0),
+    height=fig8_height, margin=dict(t=50 if IS_MOBILE else 90, b=40, l=0, r=0),
     geo=dict(
         showframe=False, showcoastlines=False, showland=True, landcolor="#f8fafc",
         showocean=True, oceancolor="#ffffff", showlakes=False, showcountries=True,
@@ -751,19 +743,7 @@ st.markdown(
     'reale sul totale.</div>', unsafe_allow_html=True
 )
 st.markdown(
-    '<div class="concl-card"><b>Ricchezza e popolazione tirano in direzioni diverse.</b> Il consumo pro '
-    'capite è legato fortemente alla ricchezza di un paese, ma i giganti demografici come Cina, India, '
-    'Indonesia e Pakistan dimostrano che avere tanti abitanti non equivale ad avere alti consumi a persona.'
-    '</div>', unsafe_allow_html=True
-)
-st.markdown(
-    '<div class="concl-card"><b>L\'Italia si colloca in una posizione intermedia:</b> 38ª a livello '
-    'mondiale, con una crescita costante ma più lenta rispetto a Germania e Spagna, che negli ultimi anni '
-    'hanno accelerato di più.</div>', unsafe_allow_html=True
-)
-
-st.markdown(
-    '<p style="text-align:center; color:#6B7D74; margin-top:2.5rem; font-size:0.9rem;">'
-    'Dati: Our World in Data — Energy Dataset · Elaborazione e grafici realizzati con Python, Pandas e Plotly</p>',
-    unsafe_allow_html=True
+    '<div class="concl-card"><b>La ricchezza spinge i consumi, la popolazione li moltiplica.</b> '
+    'I paesi più ricchi consumano molta più energia per abitante, ma i giganti demografici in forte sviluppo '
+    'rappresentano il vero ago della bilancia per la domanda globale nei prossimi decenni.</div>', unsafe_allow_html=True
 )
