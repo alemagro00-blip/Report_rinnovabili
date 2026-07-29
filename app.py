@@ -251,13 +251,13 @@ fig1.update_traces(
     textfont=dict(size=12, color="#555555"), marker_line_width=0, width=0.55
 )
 fig1.update_layout(
-    title={"text": f"<b>Chi guida la transizione energetica ({ultimo_anno})</b>", "x": 0.02, "xanchor": "left"},
+    title={"text": f"<b>Chi guida la transizione<br>energetica ({ultimo_anno})</b>", "x": 0.02, "xanchor": "left", "font": dict(size=17)},
     xaxis_title="Quota di energia rinnovabile (%)", yaxis_title="",
     template="plotly_white", height=max(560, len(df_last) * 24), showlegend=False,
-    margin=dict(l=110, r=90, t=70, b=50)
+    margin=dict(l=110, r=90, t=95, b=50)
 )
-fig1.update_xaxes(showgrid=True, gridcolor="rgba(0,0,0,0.12)")
-fig1.update_yaxes(showgrid=False, categoryorder="array", categoryarray=df_last["country_label"])
+fig1.update_xaxes(showgrid=True, gridcolor="rgba(0,0,0,0.12)", automargin=True)
+fig1.update_yaxes(showgrid=False, categoryorder="array", categoryarray=df_last["country_label"], automargin=True)
 st.plotly_chart(fig1, use_container_width=True, config=PLOTLY_CONFIG)
 
 st.markdown(
@@ -281,11 +281,11 @@ fig2 = px.line(
 )
 fig2.update_traces(line=dict(width=2.5), marker=dict(size=7))
 fig2.update_layout(
-    title={"text": "<b>Evoluzione della quota di rinnovabili nei paesi leader</b>", "x": 0.02},
+    title={"text": "<b>Evoluzione della quota di rinnovabili<br>nei paesi leader</b>", "x": 0.02, "font": dict(size=17)},
     xaxis_title="Anno", yaxis_title="Quota di energia rinnovabile (%)",
-    template="plotly_white", height=560, hovermode="x unified",
+    template="plotly_white", height=580, hovermode="x unified",
     legend=dict(orientation="h", yanchor="top", y=-0.18, xanchor="center", x=0.5, title=""),
-    margin=dict(b=90)
+    margin=dict(t=95, b=90)
 )
 st.plotly_chart(fig2, use_container_width=True, config=PLOTLY_CONFIG)
 
@@ -330,8 +330,8 @@ fig3.update_layout(
     legend=dict(orientation="h", yanchor="top", y=-0.18, xanchor="center", x=0.5, title=""),
     margin=dict(l=70, r=50, t=70, b=90)
 )
-fig3.update_xaxes(showgrid=True, gridcolor="rgba(0,0,0,0.12)")
-fig3.update_yaxes(showgrid=True, gridcolor="rgba(0,0,0,0.12)")
+fig3.update_xaxes(showgrid=True, gridcolor="rgba(0,0,0,0.12)", automargin=True)
+fig3.update_yaxes(showgrid=True, gridcolor="rgba(0,0,0,0.12)", automargin=True)
 st.plotly_chart(fig3, use_container_width=True, config=PLOTLY_CONFIG)
 
 st.markdown(
@@ -376,15 +376,15 @@ fig4 = px.bar(mix, x="country", y="Quota", color="Fonte", text="Quota", color_di
 fig4.update_traces(texttemplate="%{text:.0f}%", textposition="inside")
 fig4.update_layout(
     barmode="stack",
-    title={"text": f"<b>Da cosa dipende ancora il sistema energetico? ({ultimo_anno})</b>", "x": 0.02, "xanchor": "left"},
+    title={"text": f"<b>Da cosa dipende ancora<br>il sistema energetico? ({ultimo_anno})</b>", "x": 0.02, "xanchor": "left", "font": dict(size=17)},
     xaxis_title="", yaxis_title="Quota del mix energetico (%)",
     template="plotly_white", height=620,
     legend=dict(orientation="h", yanchor="top", y=-0.28, xanchor="center", x=0.5, title=""),
-    margin=dict(l=60, r=30, t=70, b=110),
+    margin=dict(l=60, r=30, t=95, b=110),
     uniformtext_minsize=8, uniformtext_mode="hide"
 )
-fig4.update_xaxes(tickangle=-40)
-fig4.update_yaxes(range=[0, 100], showgrid=True, gridcolor="rgba(0,0,0,0.12)")
+fig4.update_xaxes(tickangle=-40, automargin=True)
+fig4.update_yaxes(range=[0, 100], showgrid=True, gridcolor="rgba(0,0,0,0.12)", automargin=True)
 st.plotly_chart(fig4, use_container_width=True, config=PLOTLY_CONFIG)
 
 dipendenza_media = (
@@ -435,8 +435,8 @@ fig5.update_layout(
     legend=dict(orientation="h", yanchor="top", y=-0.18, xanchor="center", x=0.5, title=""),
     margin=dict(b=90)
 )
-fig5.update_xaxes(showgrid=True, gridcolor="rgba(0,0,0,0.12)")
-fig5.update_yaxes(showgrid=True, gridcolor="rgba(0,0,0,0.12)")
+fig5.update_xaxes(showgrid=True, gridcolor="rgba(0,0,0,0.12)", automargin=True)
+fig5.update_yaxes(showgrid=True, gridcolor="rgba(0,0,0,0.12)", automargin=True)
 st.plotly_chart(fig5, use_container_width=True, config=PLOTLY_CONFIG)
 
 st.markdown(
@@ -468,11 +468,12 @@ fig6 = px.bar(
 )
 fig6.update_traces(texttemplate="%{text:.2f}%", textposition="outside", marker_line_width=0)
 fig6.update_layout(
-    title={"text": f"<b>Quali rinnovabili contano davvero? ({ultimo_anno})</b>", "x": 0.02, "xanchor": "left"},
+    title={"text": f"<b>Quali rinnovabili<br>contano davvero? ({ultimo_anno})</b>", "x": 0.02, "xanchor": "left", "font": dict(size=17)},
     xaxis_title="Quota media di energia (%)", yaxis_title="",
-    template="plotly_white", height=430, showlegend=False, margin=dict(l=140, r=100, t=70, b=50)
+    template="plotly_white", height=450, showlegend=False, margin=dict(l=140, r=100, t=95, b=50)
 )
-fig6.update_xaxes(showgrid=True, gridcolor="rgba(0,0,0,0.12)")
+fig6.update_xaxes(showgrid=True, gridcolor="rgba(0,0,0,0.12)", automargin=True)
+fig6.update_yaxes(automargin=True)
 st.plotly_chart(fig6, use_container_width=True, config=PLOTLY_CONFIG)
 
 st.markdown(
@@ -534,8 +535,8 @@ fig7.update_layout(
     xaxis_title="PIL pro capite (scala logaritmica, $)", yaxis_title="Consumo di energia pro capite (kWh)",
     template="plotly_white", height=580
 )
-fig7.update_xaxes(showgrid=True, gridcolor="rgba(0,0,0,0.12)")
-fig7.update_yaxes(showgrid=True, gridcolor="rgba(0,0,0,0.12)")
+fig7.update_xaxes(showgrid=True, gridcolor="rgba(0,0,0,0.12)", automargin=True)
+fig7.update_yaxes(showgrid=True, gridcolor="rgba(0,0,0,0.12)", automargin=True)
 st.plotly_chart(fig7, use_container_width=True, config=PLOTLY_CONFIG)
 
 correlazione = df_gdp["gdp_per_capita"].corr(df_gdp["energy_per_capita"])
@@ -583,9 +584,9 @@ fig8 = px.choropleth(
 )
 fig8.update_traces(marker_line_color="#B0B0B0", marker_line_width=0.6)
 fig8.update_layout(
-    title={"text": "<b>La transizione energetica vista dal mondo, oggi</b>", "x": 0.02, "xanchor": "left",
-           "font": dict(size=20, color="#1B4332")},
-    template="plotly_white", height=580,
+    title={"text": "<b>La transizione energetica<br>vista dal mondo, oggi</b>", "x": 0.02, "xanchor": "left",
+           "font": dict(size=17, color="#1B4332")},
+    template="plotly_white", height=600, margin=dict(t=90, b=60),
     geo=dict(
         showframe=False, showcoastlines=False, showland=True, landcolor="white",
         showocean=True, oceancolor="white", showlakes=False, showcountries=True,
