@@ -16,14 +16,31 @@ st.set_page_config(
 )
 
 # 2. BLOCCO ANTI-AUTOFOCUS (DISATTIVA SCROLLAUTOMATICO MAPPA)
+import streamlit as st
+import pandas as pd
+import plotly.express as px
+
+# 1. CONFIGURAZIONE PAGINA
+st.set_page_config(
+    page_title="La Corsa alle Rinnovabili",
+    page_icon="🌱",
+    layout="wide",
+    initial_sidebar_state="collapsed"
+)
+
+# 2. INIETTA UN ANCORAGGIO INVISIBILE E DISABILITA L'AUTOFOCUS TRAMITE CSS
 st.markdown("""
-    <script>
-        window.HTMLElement.prototype.scrollIntoView = function() {};
-        if (window.parent) {
-            window.parent.scrollTo(0, 0);
+    <div id="top-anchor"></div>
+    <style>
+        /* Disabilita l'indicatore visivo di focus che Streamlit assegna ai grafici */
+        *:focus {
+            outline: none !important;
         }
-        window.scrollTo(0, 0);
-    </script>
+        /* Disattiva l'autofocus sugli iframe interni */
+        iframe {
+            pointer-events: auto !important;
+        }
+    </style>
 """, unsafe_allow_html=True)
 
 # 3. PLOTLY CONFIG
