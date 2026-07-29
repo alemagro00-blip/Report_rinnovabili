@@ -14,6 +14,13 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
+# --- FORZA LO SCROLL IN CIMA ALL'AVVIO ---
+st.markdown("<div id='top'></div>", unsafe_allow_html=True)
+st.html("""
+    <script>
+        window.scrollTo(0, 0);
+    </script>
+""")
 # =========================================================
 # FUNZIONE UNICA PER SFONDO BIANCO E TESTO SCURO SU PLOTLY
 # =========================================================
