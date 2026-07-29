@@ -14,36 +14,6 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# Su mobile, forziamo il browser a "pensare" di avere una finestra più larga
-# (esattamente come la modalità "visualizza sito desktop"): il browser poi
-# scala automaticamente tutta la pagina per farla stare sullo schermo reale,
-# rimpicciolendo testi e grafici in blocco senza comprimerli.
-st.components.v1.html("""
-<script>
-(function() {
-    try {
-        var doc = window.parent.document;
-        var meta = doc.querySelector('meta[name="viewport"]');
-        if (!meta) {
-            meta = doc.createElement('meta');
-            meta.name = 'viewport';
-            doc.head.appendChild(meta);
-        }
-        function aggiorna() {
-            if (window.parent.innerWidth < 640) {
-                meta.setAttribute('content', 'width=1100');
-            } else {
-                meta.setAttribute('content', 'width=device-width, initial-scale=1');
-            }
-        }
-        aggiorna();
-        window.parent.addEventListener('resize', aggiorna);
-        window.parent.addEventListener('orientationchange', aggiorna);
-    } catch (e) {}
-})();
-</script>
-""", height=0, width=0)
-
 # =========================================================
 # STILE GRAFICO (tema verde, font moderni)
 # =========================================================
@@ -172,6 +142,21 @@ footer {visibility: hidden;}
 /* Il grafico Plotly non deve mai forzare scroll orizzontale */
 .stPlotlyChart, .js-plotly-plot, .plot-container {
     width: 100% !important;
+}
+
+/* Su mobile i grafici sono troppo stretti e alti (l'altezza è fissa in pixel
+   mentre la larghezza si riduce moltissimo): vincoliamo le proporzioni e
+   lasciamo che Plotly (già impostato come "responsive") si ridisegni dentro
+   il nuovo formato, più orizzontale e leggibile. */
+@media (max-width: 640px) {
+    div[data-testid="stPlotlyChart"],
+    div[data-testid="stPlotlyChart"] > div,
+    .js-plotly-plot,
+    .plot-container {
+        height: auto !important;
+        aspect-ratio: 4 / 3 !important;
+        max-height: 420px !important;
+    }
 }
 </style>
 """, unsafe_allow_html=True)
