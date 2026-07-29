@@ -19,29 +19,29 @@ st.set_page_config(
 # ==============================================================================
 
 def forza_sfondo_bianco(fig):
-    # 1. Sfondo generale e font base
+    # Applica prima il tema bianco nativo di Plotly
+    fig.update_layout(template="plotly_white")
+    
+    # Poi applica la configurazione specifica dei colori scuri
     fig.update_layout(
         paper_bgcolor="#ffffff",
         plot_bgcolor="#ffffff",
         font=dict(color="#1e293b", family="Inter, sans-serif"),
-        title_font=dict(color="#1B4332"),
-        legend_font=dict(color="#1e293b")
+        title=dict(font=dict(color="#1B4332", size=16)),
+        legend=dict(font=dict(color="#1e293b")),
     )
     
-    # 2. Forzatura capillare su TUTTI gli assi X (etichette + titoli + griglia)
-    fig.for_each_xaxis(lambda axis: axis.update(
-        tickfont=dict(color="#2D3A34"),
-        title_font=dict(color="#1B4332"),
-        gridcolor="rgba(0,0,0,0.1)"
-    ))
-    
-    # 3. Forzatura capillare su TUTTI gli assi Y (etichette + titoli + griglia)
-    fig.for_each_yaxis(lambda axis: axis.update(
-        tickfont=dict(color="#2D3A34"),
-        title_font=dict(color="#1B4332"),
-        gridcolor="rgba(0,0,0,0.1)"
-    ))
-    
+    # Forza colore scuro sui tick
+    fig.update_xaxes(
+        tickfont=dict(color="#1e293b"),
+        title=dict(font=dict(color="#1e293b")),
+        gridcolor="#f0f0f0"
+    )
+    fig.update_yaxes(
+        tickfont=dict(color="#1e293b"),
+        title=dict(font=dict(color="#1e293b")),
+        gridcolor="#f0f0f0"
+    )
     return fig
 # =========================================================
 # RILEVAMENTO DISPOSITIVO (Mobile vs Desktop)
