@@ -15,6 +15,20 @@ st.set_page_config(
 )
 
 # =========================================================
+# RILEVAMENTO DISPOSITIVO (Mobile vs Desktop)
+# =========================================================
+def is_mobile():
+    """Rileva se l'utente è su un dispositivo mobile controllando lo User-Agent dagli header HTTP di Streamlit."""
+    try:
+        user_agent = st.context.headers.get("User-Agent", "").lower()
+        mobile_keywords = ["mobile", "android", "iphone", "ipad", "ipod", "blackberry", "windows phone"]
+        return any(keyword in user_agent for keyword in mobile_keywords)
+    except Exception:
+        return False
+
+IS_MOBILE = is_mobile()
+
+# =========================================================
 # STILE GRAFICO (tema verde, font moderni)
 # =========================================================
 st.markdown("""
@@ -139,35 +153,17 @@ footer {visibility: hidden;}
     }
 }
 
-/* Il grafico Plotly non deve mai forzare scroll orizzontale */
+/* Garantisce il responsive senza forzare scroll orizzontale */
 .stPlotlyChart, .js-plotly-plot, .plot-container {
     width: 100% !important;
-}
-
-/* Su mobile i grafici sono troppo stretti e alti (l'altezza è fissa in pixel
-   mentre la larghezza si riduce moltissimo): vincoliamo le proporzioni e
-   lasciamo che Plotly (già impostato come "responsive") si ridisegni dentro
-   il nuovo formato, più orizzontale e leggibile. */
-@media (max-width: 640px) {
-    div[data-testid="stPlotlyChart"],
-    div[data-testid="stPlotlyChart"] > div,
-    .js-plotly-plot,
-    .plot-container {
-        height: auto !important;
-        aspect-ratio: 4 / 3 !important;
-        max-height: 420px !important;
-    }
 }
 </style>
 """, unsafe_allow_html=True)
 
-# Configurazione comune per tutti i grafici Plotly:
-# - nasconde la barra degli strumenti (si sovrappone a titoli/grafico, soprattutto su mobile)
-# - rende il grafico reattivo al ridimensionamento del contenitore
 PLOTLY_CONFIG = {"displayModeBar": False, "responsive": True}
 
 # =========================================================
-# CARICAMENTO E PULIZIA DATI (stessa logica del notebook)
+# CARICAMENTO E PULIZIA DATI
 # =========================================================
 @st.cache_data(show_spinner="Carico e preparo i dati energetici globali...")
 def carica_dati():
@@ -256,15 +252,23 @@ fig1 = px.bar(
     df_last, x="renewables_share_energy", y="country_label", orientation="h",
     text="renewables_share_energy", color="colore", color_discrete_map="identity"
 )
+
+# Impostazioni responsive fig1
+title_font_size = 14 if IS_MOBILE else 17
+text_font_size = 10 if IS_MOBILE else 12
+bar_height = max(500, len(df_last) * 20) if IS_MOBILE else max(560, len(df_last) * 24)
+margin_l = 85 if IS_MOBILE else 110
+margin_r = 50 if IS_MOBILE else 90
+
 fig1.update_traces(
     texttemplate="%{text:.1f}%", textposition="outside",
-    textfont=dict(size=12, color="#555555"), marker_line_width=0, width=0.55
+    textfont=dict(size=text_font_size, color="#555555"), marker_line_width=0, width=0.55
 )
 fig1.update_layout(
-    title={"text": f"<b>Chi guida la transizione<br>energetica ({ultimo_anno})</b>", "x": 0.02, "xanchor": "left", "font": dict(size=17)},
+    title={"text": f"<b>Chi guida la transizione<br>energetica ({ultimo_anno})</b>", "x": 0.02, "xanchor": "left", "font": dict(size=title_font_size)},
     xaxis_title="Quota di energia rinnovabile (%)", yaxis_title="",
-    template="plotly_white", height=max(560, len(df_last) * 24), showlegend=False,
-    margin=dict(l=110, r=90, t=95, b=50)
+    template="plotly_white", height=bar_height, showlegend=False,
+    margin=dict(l=margin_l, r=margin_r, t=80, b=40)
 )
 fig1.update_xaxes(showgrid=True, gridcolor="rgba(0,0,0,0.12)", automargin=True)
 fig1.update_yaxes(showgrid=False, categoryorder="array", categoryarray=df_last["country_label"], automargin=True)
@@ -289,13 +293,19 @@ fig2 = px.line(
     trend, x="year", y="renewables_share_energy", color="country",
     markers=True, color_discrete_sequence=palette_verde
 )
-fig2.update_traces(line=dict(width=2.5), marker=dict(size=7))
+
+# Impostazioni responsive fig2
+fig2_height = 420 if IS_MOBILE else 580
+legend_y2 = -0.35 if IS_MOBILE else -0.18
+margin_b2 = 110 if IS_MOBILE else 90
+
+fig2.update_traces(line=dict(width=2.5), marker=dict(size=6 if IS_MOBILE else 7))
 fig2.update_layout(
-    title={"text": "<b>Evoluzione della quota di rinnovabili<br>nei paesi leader</b>", "x": 0.02, "font": dict(size=17)},
+    title={"text": "<b>Evoluzione della quota di rinnovabili<br>nei paesi leader</b>", "x": 0.02, "font": dict(size=title_font_size)},
     xaxis_title="Anno", yaxis_title="Quota di energia rinnovabile (%)",
-    template="plotly_white", height=580, hovermode="x unified",
-    legend=dict(orientation="h", yanchor="top", y=-0.18, xanchor="center", x=0.5, title=""),
-    margin=dict(t=95, b=90)
+    template="plotly_white", height=fig2_height, hovermode="x unified",
+    legend=dict(orientation="h", yanchor="top", y=legend_y2, xanchor="center", x=0.5, title=""),
+    margin=dict(l=20 if IS_MOBILE else 40, r=20 if IS_MOBILE else 40, t=85, b=margin_b2)
 )
 st.plotly_chart(fig2, use_container_width=True, config=PLOTLY_CONFIG)
 
@@ -331,14 +341,19 @@ fig3 = px.line(
     df_europe, x="year", y="renewables_share_energy", color="country",
     markers=True, color_discrete_map=colori_paesi
 )
-fig3.update_traces(line=dict(width=2.5), marker=dict(size=7))
-fig3.update_traces(selector=dict(name="Italy"), line=dict(width=4), marker=dict(size=9))
+
+# Impostazioni responsive fig3
+fig3_height = 420 if IS_MOBILE else 550
+legend_y3 = -0.32 if IS_MOBILE else -0.18
+
+fig3.update_traces(line=dict(width=2.5), marker=dict(size=6 if IS_MOBILE else 7))
+fig3.update_traces(selector=dict(name="Italy"), line=dict(width=3.5 if IS_MOBILE else 4), marker=dict(size=8 if IS_MOBILE else 9))
 fig3.update_layout(
-    title={"text": "<b>Italia vs grandi paesi europei</b>", "x": 0.02, "xanchor": "left"},
+    title={"text": "<b>Italia vs grandi paesi europei</b>", "x": 0.02, "xanchor": "left", "font": dict(size=title_font_size)},
     xaxis_title="Anno", yaxis_title="Quota di energia rinnovabile (%)",
-    template="plotly_white", height=550, hovermode="x unified",
-    legend=dict(orientation="h", yanchor="top", y=-0.18, xanchor="center", x=0.5, title=""),
-    margin=dict(l=70, r=50, t=70, b=90)
+    template="plotly_white", height=fig3_height, hovermode="x unified",
+    legend=dict(orientation="h", yanchor="top", y=legend_y3, xanchor="center", x=0.5, title=""),
+    margin=dict(l=20 if IS_MOBILE else 70, r=20 if IS_MOBILE else 50, t=70, b=100 if IS_MOBILE else 90)
 )
 fig3.update_xaxes(showgrid=True, gridcolor="rgba(0,0,0,0.12)", automargin=True)
 fig3.update_yaxes(showgrid=True, gridcolor="rgba(0,0,0,0.12)", automargin=True)
@@ -383,17 +398,23 @@ colori_mix = {
 }
 
 fig4 = px.bar(mix, x="country", y="Quota", color="Fonte", text="Quota", color_discrete_map=colori_mix)
+
+# Impostazioni responsive fig4
+fig4_height = 480 if IS_MOBILE else 620
+legend_y4 = -0.40 if IS_MOBILE else -0.28
+margin_b4 = 120 if IS_MOBILE else 110
+
 fig4.update_traces(texttemplate="%{text:.0f}%", textposition="inside")
 fig4.update_layout(
     barmode="stack",
-    title={"text": f"<b>Da cosa dipende ancora<br>il sistema energetico? ({ultimo_anno})</b>", "x": 0.02, "xanchor": "left", "font": dict(size=17)},
+    title={"text": f"<b>Da cosa dipende ancora<br>il sistema energetico? ({ultimo_anno})</b>", "x": 0.02, "xanchor": "left", "font": dict(size=title_font_size)},
     xaxis_title="", yaxis_title="Quota del mix energetico (%)",
-    template="plotly_white", height=620,
-    legend=dict(orientation="h", yanchor="top", y=-0.28, xanchor="center", x=0.5, title=""),
-    margin=dict(l=60, r=30, t=95, b=110),
-    uniformtext_minsize=8, uniformtext_mode="hide"
+    template="plotly_white", height=fig4_height,
+    legend=dict(orientation="h", yanchor="top", y=legend_y4, xanchor="center", x=0.5, title=""),
+    margin=dict(l=20 if IS_MOBILE else 60, r=20 if IS_MOBILE else 30, t=85, b=margin_b4),
+    uniformtext_minsize=7 if IS_MOBILE else 8, uniformtext_mode="hide"
 )
-fig4.update_xaxes(tickangle=-40, automargin=True)
+fig4.update_xaxes(tickangle=-45, automargin=True)
 fig4.update_yaxes(range=[0, 100], showgrid=True, gridcolor="rgba(0,0,0,0.12)", automargin=True)
 st.plotly_chart(fig4, use_container_width=True, config=PLOTLY_CONFIG)
 
@@ -437,13 +458,18 @@ andamento["Fonte"] = andamento["Fonte"].map({"solar_share_energy": "Solare", "wi
 colori_fonti = {"Solare": "#F4A261", "Eolico": "#457B9D"}
 
 fig5 = px.line(andamento, x="year", y="Quota media (%)", color="Fonte", markers=True, color_discrete_map=colori_fonti)
-fig5.update_traces(line=dict(width=3), marker=dict(size=7))
+
+# Impostazioni responsive fig5
+fig5_height = 400 if IS_MOBILE else 550
+legend_y5 = -0.30 if IS_MOBILE else -0.18
+
+fig5.update_traces(line=dict(width=2.5 if IS_MOBILE else 3), marker=dict(size=6 if IS_MOBILE else 7))
 fig5.update_layout(
-    title={"text": "<b>Chi cresce più in fretta: solare o eolico?</b>", "x": 0.02, "xanchor": "left"},
+    title={"text": "<b>Chi cresce più in fretta: solare o eolico?</b>", "x": 0.02, "xanchor": "left", "font": dict(size=title_font_size)},
     xaxis_title="Anno", yaxis_title="Quota media di energia (%)",
-    template="plotly_white", height=550, hovermode="x unified",
-    legend=dict(orientation="h", yanchor="top", y=-0.18, xanchor="center", x=0.5, title=""),
-    margin=dict(b=90)
+    template="plotly_white", height=fig5_height, hovermode="x unified",
+    legend=dict(orientation="h", yanchor="top", y=legend_y5, xanchor="center", x=0.5, title=""),
+    margin=dict(l=20 if IS_MOBILE else 40, r=20 if IS_MOBILE else 40, t=75, b=90)
 )
 fig5.update_xaxes(showgrid=True, gridcolor="rgba(0,0,0,0.12)", automargin=True)
 fig5.update_yaxes(showgrid=True, gridcolor="rgba(0,0,0,0.12)", automargin=True)
@@ -476,11 +502,18 @@ fig6 = px.bar(
     rinnovabili_media, x="Quota media globale (%)", y="Fonte", orientation="h",
     text="Quota media globale (%)", color="Fonte", color_discrete_map=colori_rinnovabili
 )
+
+# Impostazioni responsive fig6
+fig6_height = 380 if IS_MOBILE else 450
+margin_l6 = 105 if IS_MOBILE else 140
+margin_r6 = 60 if IS_MOBILE else 100
+
 fig6.update_traces(texttemplate="%{text:.2f}%", textposition="outside", marker_line_width=0)
 fig6.update_layout(
-    title={"text": f"<b>Quali rinnovabili<br>contano davvero? ({ultimo_anno})</b>", "x": 0.02, "xanchor": "left", "font": dict(size=17)},
+    title={"text": f"<b>Quali rinnovabili<br>contano davvero? ({ultimo_anno})</b>", "x": 0.02, "xanchor": "left", "font": dict(size=title_font_size)},
     xaxis_title="Quota media di energia (%)", yaxis_title="",
-    template="plotly_white", height=450, showlegend=False, margin=dict(l=140, r=100, t=95, b=50)
+    template="plotly_white", height=fig6_height, showlegend=False, 
+    margin=dict(l=margin_l6, r=margin_r6, t=85, b=40)
 )
 fig6.update_xaxes(showgrid=True, gridcolor="rgba(0,0,0,0.12)", automargin=True)
 fig6.update_yaxes(automargin=True)
@@ -525,11 +558,9 @@ fig7 = px.scatter(
 )
 fig7.update_traces(
     marker=dict(opacity=0.65, line=dict(width=0.5, color="white")),
-    textposition="top center", textfont=dict(size=11, color="#2F3B45")
+    textposition="top center", textfont=dict(size=9 if IS_MOBILE else 11, color="#2F3B45")
 )
 
-# Retta di tendenza calcolata a mano (regressione lineare su log10(gdp) vs energia),
-# per non dipendere da statsmodels che su alcuni ambienti Streamlit Cloud non si installa
 log_x = np.log10(df_gdp["gdp_per_capita"])
 coeff = np.polyfit(log_x, df_gdp["energy_per_capita"], 1)
 x_linea = np.linspace(log_x.min(), log_x.max(), 100)
@@ -540,10 +571,14 @@ fig7.add_trace(go.Scatter(
     line=dict(color="#1B4332", width=2, dash="dash"),
     name="Tendenza", hoverinfo="skip", showlegend=False
 ))
+
+fig7_height = 420 if IS_MOBILE else 580
+
 fig7.update_layout(
-    title={"text": "<b>Più ricchi, più energivori?</b>", "x": 0.02, "xanchor": "left"},
+    title={"text": "<b>Più ricchi, più energivori?</b>", "x": 0.02, "xanchor": "left", "font": dict(size=title_font_size)},
     xaxis_title="PIL pro capite (scala logaritmica, $)", yaxis_title="Consumo di energia pro capite (kWh)",
-    template="plotly_white", height=580
+    template="plotly_white", height=fig7_height,
+    margin=dict(l=20 if IS_MOBILE else 40, r=20 if IS_MOBILE else 40, t=75, b=50)
 )
 fig7.update_xaxes(showgrid=True, gridcolor="rgba(0,0,0,0.12)", automargin=True)
 fig7.update_yaxes(showgrid=True, gridcolor="rgba(0,0,0,0.12)", automargin=True)
@@ -592,18 +627,22 @@ fig8 = px.choropleth(
     hover_data={"renewables_share_energy": ":.1f", "fascia": False, "iso_code": False},
     color_discrete_map=colori_fasce, category_orders={"fascia": etichette}
 )
+
+fig8_height = 380 if IS_MOBILE else 600
+legend_y8 = -0.20 if IS_MOBILE else -0.1
+
 fig8.update_traces(marker_line_color="#B0B0B0", marker_line_width=0.6)
 fig8.update_layout(
     title={"text": "<b>La transizione energetica<br>vista dal mondo, oggi</b>", "x": 0.02, "xanchor": "left",
-           "font": dict(size=17, color="#1B4332")},
-    template="plotly_white", height=600, margin=dict(t=90, b=60),
+           "font": dict(size=title_font_size, color="#1B4332")},
+    template="plotly_white", height=fig8_height, margin=dict(t=80, b=60, l=10, r=10),
     geo=dict(
         showframe=False, showcoastlines=False, showland=True, landcolor="white",
         showocean=True, oceancolor="white", showlakes=False, showcountries=True,
         countrycolor="#B0B0B0", projection_type="natural earth", bgcolor="rgba(0,0,0,0)"
     ),
     paper_bgcolor="rgba(0,0,0,0)",
-    legend=dict(orientation="h", yanchor="bottom", y=-0.1, xanchor="center", x=0.5, title="")
+    legend=dict(orientation="h", yanchor="bottom", y=legend_y8, xanchor="center", x=0.5, title="")
 )
 st.plotly_chart(fig8, use_container_width=True, config=PLOTLY_CONFIG)
 
