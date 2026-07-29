@@ -129,8 +129,32 @@ hr.divider {
 .concl-card b { color: #1B4332; }
 
 footer {visibility: hidden;}
+
+/* Adattamento mobile */
+@media (max-width: 640px) {
+    .main .block-container {
+        padding-left: 0.7rem;
+        padding-right: 0.7rem;
+        padding-top: 1.4rem;
+    }
+    .hero-title { font-size: 2rem; }
+    .hero-subtitle { font-size: 0.98rem; }
+    .toc-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+    .toc-card { padding: 12px 10px; font-size: 0.85rem; }
+    .insight-box, .section-intro, .concl-card { font-size: 0.96rem; }
+}
+
+/* Il grafico Plotly non deve mai forzare scroll orizzontale */
+.stPlotlyChart, .js-plotly-plot, .plot-container {
+    width: 100% !important;
+}
 </style>
 """, unsafe_allow_html=True)
+
+# Configurazione comune per tutti i grafici Plotly:
+# - nasconde la barra degli strumenti (si sovrappone a titoli/grafico, soprattutto su mobile)
+# - rende il grafico reattivo al ridimensionamento del contenitore
+PLOTLY_CONFIG = {"displayModeBar": False, "responsive": True}
 
 # =========================================================
 # CARICAMENTO E PULIZIA DATI (stessa logica del notebook)
@@ -229,12 +253,12 @@ fig1.update_traces(
 fig1.update_layout(
     title={"text": f"<b>Chi guida la transizione energetica ({ultimo_anno})</b>", "x": 0.02, "xanchor": "left"},
     xaxis_title="Quota di energia rinnovabile (%)", yaxis_title="",
-    template="plotly_white", height=560, showlegend=False,
-    margin=dict(l=120, r=100, t=70, b=50)
+    template="plotly_white", height=max(560, len(df_last) * 24), showlegend=False,
+    margin=dict(l=110, r=90, t=70, b=50)
 )
 fig1.update_xaxes(showgrid=True, gridcolor="rgba(0,0,0,0.12)")
 fig1.update_yaxes(showgrid=False, categoryorder="array", categoryarray=df_last["country_label"])
-st.plotly_chart(fig1, use_container_width=True)
+st.plotly_chart(fig1, use_container_width=True, config=PLOTLY_CONFIG)
 
 st.markdown(
     '<div class="small-note">I paesi in cima alla classifica sono spesso piccoli Stati con condizioni '
@@ -259,9 +283,11 @@ fig2.update_traces(line=dict(width=2.5), marker=dict(size=7))
 fig2.update_layout(
     title={"text": "<b>Evoluzione della quota di rinnovabili nei paesi leader</b>", "x": 0.02},
     xaxis_title="Anno", yaxis_title="Quota di energia rinnovabile (%)",
-    template="plotly_white", height=560, hovermode="x unified", legend_title="Paesi"
+    template="plotly_white", height=560, hovermode="x unified",
+    legend=dict(orientation="h", yanchor="top", y=-0.18, xanchor="center", x=0.5, title=""),
+    margin=dict(b=90)
 )
-st.plotly_chart(fig2, use_container_width=True)
+st.plotly_chart(fig2, use_container_width=True, config=PLOTLY_CONFIG)
 
 st.markdown(
     '<div class="insight-box">La classifica di oggi però non racconta tutta la storia: la '
@@ -300,12 +326,13 @@ fig3.update_traces(selector=dict(name="Italy"), line=dict(width=4), marker=dict(
 fig3.update_layout(
     title={"text": "<b>Italia vs grandi paesi europei</b>", "x": 0.02, "xanchor": "left"},
     xaxis_title="Anno", yaxis_title="Quota di energia rinnovabile (%)",
-    template="plotly_white", height=550, hovermode="x unified", legend_title="Paesi",
-    margin=dict(l=70, r=80, t=70, b=50)
+    template="plotly_white", height=550, hovermode="x unified",
+    legend=dict(orientation="h", yanchor="top", y=-0.18, xanchor="center", x=0.5, title=""),
+    margin=dict(l=70, r=50, t=70, b=90)
 )
 fig3.update_xaxes(showgrid=True, gridcolor="rgba(0,0,0,0.12)")
 fig3.update_yaxes(showgrid=True, gridcolor="rgba(0,0,0,0.12)")
-st.plotly_chart(fig3, use_container_width=True)
+st.plotly_chart(fig3, use_container_width=True, config=PLOTLY_CONFIG)
 
 st.markdown(
     '<div class="insight-box">L\'Italia cresce in modo costante e si mantiene su livelli competitivi. '
@@ -350,12 +377,15 @@ fig4.update_traces(texttemplate="%{text:.0f}%", textposition="inside")
 fig4.update_layout(
     barmode="stack",
     title={"text": f"<b>Da cosa dipende ancora il sistema energetico? ({ultimo_anno})</b>", "x": 0.02, "xanchor": "left"},
-    xaxis_title="Paese", yaxis_title="Quota del mix energetico (%)",
-    template="plotly_white", height=580, legend_title="Fonte energetica",
-    margin=dict(l=70, r=80, t=70, b=50)
+    xaxis_title="", yaxis_title="Quota del mix energetico (%)",
+    template="plotly_white", height=620,
+    legend=dict(orientation="h", yanchor="top", y=-0.28, xanchor="center", x=0.5, title=""),
+    margin=dict(l=60, r=30, t=70, b=110),
+    uniformtext_minsize=8, uniformtext_mode="hide"
 )
+fig4.update_xaxes(tickangle=-40)
 fig4.update_yaxes(range=[0, 100], showgrid=True, gridcolor="rgba(0,0,0,0.12)")
-st.plotly_chart(fig4, use_container_width=True)
+st.plotly_chart(fig4, use_container_width=True, config=PLOTLY_CONFIG)
 
 dipendenza_media = (
     df[df["year"] == ultimo_anno][list(fonti.keys())]
@@ -401,11 +431,13 @@ fig5.update_traces(line=dict(width=3), marker=dict(size=7))
 fig5.update_layout(
     title={"text": "<b>Chi cresce più in fretta: solare o eolico?</b>", "x": 0.02, "xanchor": "left"},
     xaxis_title="Anno", yaxis_title="Quota media di energia (%)",
-    template="plotly_white", height=550, hovermode="x unified", legend_title="Fonte"
+    template="plotly_white", height=550, hovermode="x unified",
+    legend=dict(orientation="h", yanchor="top", y=-0.18, xanchor="center", x=0.5, title=""),
+    margin=dict(b=90)
 )
 fig5.update_xaxes(showgrid=True, gridcolor="rgba(0,0,0,0.12)")
 fig5.update_yaxes(showgrid=True, gridcolor="rgba(0,0,0,0.12)")
-st.plotly_chart(fig5, use_container_width=True)
+st.plotly_chart(fig5, use_container_width=True, config=PLOTLY_CONFIG)
 
 st.markdown(
     '<div class="small-note">L\'eolico è passato dallo 0,11% al 3,48% (+3,4 punti), il solare dallo 0,00% '
@@ -441,7 +473,7 @@ fig6.update_layout(
     template="plotly_white", height=430, showlegend=False, margin=dict(l=140, r=100, t=70, b=50)
 )
 fig6.update_xaxes(showgrid=True, gridcolor="rgba(0,0,0,0.12)")
-st.plotly_chart(fig6, use_container_width=True)
+st.plotly_chart(fig6, use_container_width=True, config=PLOTLY_CONFIG)
 
 st.markdown(
     '<div class="insight-box">Nonostante la crescita rapida, solare ed eolico restano ancora dietro '
@@ -504,7 +536,7 @@ fig7.update_layout(
 )
 fig7.update_xaxes(showgrid=True, gridcolor="rgba(0,0,0,0.12)")
 fig7.update_yaxes(showgrid=True, gridcolor="rgba(0,0,0,0.12)")
-st.plotly_chart(fig7, use_container_width=True)
+st.plotly_chart(fig7, use_container_width=True, config=PLOTLY_CONFIG)
 
 correlazione = df_gdp["gdp_per_capita"].corr(df_gdp["energy_per_capita"])
 
@@ -562,7 +594,7 @@ fig8.update_layout(
     paper_bgcolor="rgba(0,0,0,0)",
     legend=dict(orientation="h", yanchor="bottom", y=-0.1, xanchor="center", x=0.5, title="")
 )
-st.plotly_chart(fig8, use_container_width=True)
+st.plotly_chart(fig8, use_container_width=True, config=PLOTLY_CONFIG)
 
 st.markdown('<hr class="divider">', unsafe_allow_html=True)
 
@@ -613,4 +645,3 @@ st.markdown(
     'Dati: Our World in Data — Energy Dataset · Elaborazione e grafici realizzati con Python, Pandas e Plotly</p>',
     unsafe_allow_html=True
 )
-
