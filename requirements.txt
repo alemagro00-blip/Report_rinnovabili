@@ -1,3 +1,5 @@
 streamlit
-nbformat
+pandas
 plotly
+numpy
+
