@@ -14,6 +14,27 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
+# ==============================================================================
+# FUNZIONI HELPER
+# ==============================================================================
+
+def forza_sfondo_bianco(fig):
+    fig.update_layout(
+        paper_bgcolor="#ffffff",
+        plot_bgcolor="#ffffff",
+        font=dict(color="#1e293b", family="Inter, sans-serif"),
+        title=dict(font=dict(color="#1B4332")),
+    )
+    fig.update_xaxes(
+        tickfont=dict(color="#334155"),
+        title=dict(font=dict(color="#1e293b"))
+    )
+    fig.update_yaxes(
+        tickfont=dict(color="#334155"),
+        title=dict(font=dict(color="#1e293b"))
+    )
+    return fig
+    
 # =========================================================
 # RILEVAMENTO DISPOSITIVO (Mobile vs Desktop)
 # =========================================================
