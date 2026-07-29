@@ -14,6 +14,36 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
+# Su mobile, forziamo il browser a "pensare" di avere una finestra più larga
+# (esattamente come la modalità "visualizza sito desktop"): il browser poi
+# scala automaticamente tutta la pagina per farla stare sullo schermo reale,
+# rimpicciolendo testi e grafici in blocco senza comprimerli.
+st.components.v1.html("""
+<script>
+(function() {
+    try {
+        var doc = window.parent.document;
+        var meta = doc.querySelector('meta[name="viewport"]');
+        if (!meta) {
+            meta = doc.createElement('meta');
+            meta.name = 'viewport';
+            doc.head.appendChild(meta);
+        }
+        function aggiorna() {
+            if (window.parent.innerWidth < 640) {
+                meta.setAttribute('content', 'width=1100');
+            } else {
+                meta.setAttribute('content', 'width=device-width, initial-scale=1');
+            }
+        }
+        aggiorna();
+        window.parent.addEventListener('resize', aggiorna);
+        window.parent.addEventListener('orientationchange', aggiorna);
+    } catch (e) {}
+})();
+</script>
+""", height=0, width=0)
+
 # =========================================================
 # STILE GRAFICO (tema verde, font moderni)
 # =========================================================
@@ -133,10 +163,9 @@ footer {visibility: hidden;}
 /* Adattamento mobile */
 @media (max-width: 640px) {
     .main .block-container {
-        zoom: 0.5;
-        padding-left: 0.6rem;
-        padding-right: 0.6rem;
-        padding-top: 1.4rem;
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+        padding-top: 1.2rem;
     }
 }
 
