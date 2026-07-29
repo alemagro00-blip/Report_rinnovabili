@@ -133,15 +133,11 @@ footer {visibility: hidden;}
 /* Adattamento mobile */
 @media (max-width: 640px) {
     .main .block-container {
-        padding-left: 0.7rem;
-        padding-right: 0.7rem;
+        zoom: 0.8;
+        padding-left: 0.6rem;
+        padding-right: 0.6rem;
         padding-top: 1.4rem;
     }
-    .hero-title { font-size: 2rem; }
-    .hero-subtitle { font-size: 0.98rem; }
-    .toc-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
-    .toc-card { padding: 12px 10px; font-size: 0.85rem; }
-    .insight-box, .section-intro, .concl-card { font-size: 0.96rem; }
 }
 
 /* Il grafico Plotly non deve mai forzare scroll orizzontale */
