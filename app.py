@@ -133,7 +133,7 @@ footer {visibility: hidden;}
 /* Adattamento mobile */
 @media (max-width: 640px) {
     .main .block-container {
-        zoom: 0.7;
+        zoom: 0.5;
         padding-left: 0.6rem;
         padding-right: 0.6rem;
         padding-top: 1.4rem;
