@@ -19,28 +19,45 @@ st.set_page_config(
 # ==============================================================================
 
 def forza_sfondo_bianco(fig):
+    # 1. Reset completo del tema per evitare sovrascritture trasparenti
+    fig.update_layout(template=None)
+    
+    # 2. Impostazione colori di sfondo e font principale
     fig.update_layout(
         paper_bgcolor="#ffffff",
         plot_bgcolor="#ffffff",
-        # Forziamo il colore del font a livello globale del grafico
-        font=dict(color="#1e293b", family="Inter, sans-serif"),
-        title=dict(font=dict(color="#1B4332")),
-        legend=dict(font=dict(color="#1e293b"))
+        font=dict(color="#0f172a", family="Inter, sans-serif", size=12),
+        title=dict(font=dict(color="#1B4332", size=16)),
+        legend=dict(
+            font=dict(color="#0f172a", size=11),
+            bgcolor="rgba(255,255,255,0)"
+        )
     )
     
-    # Sovrascriviamo gli assi X e Y per evitare che Plotly li sbianchi
+    # 3. Forzatura NERO (#0f172a) su ASSE X (Numeri + Titolo + Linee)
     fig.update_xaxes(
-        tickfont=dict(color="#1e293b"),
-        title=dict(font=dict(color="#1e293b")),
-        color="#1e293b",
-        gridcolor="#e2e8f0"
+        tickfont=dict(color="#0f172a", size=11),
+        title=dict(font=dict(color="#0f172a", size=12)),
+        linecolor="#cbd5e1",
+        gridcolor="#f1f5f9",
+        zerolinecolor="#cbd5e1",
+        showline=True
     )
+    
+    # 4. Forzatura NERO (#0f172a) su ASSE Y (Numeri + Titolo + Linee)
     fig.update_yaxes(
-        tickfont=dict(color="#1e293b"),
-        title=dict(font=dict(color="#1e293b")),
-        color="#1e293b",
-        gridcolor="#e2e8f0"
+        tickfont=dict(color="#0f172a", size=11),
+        title=dict(font=dict(color="#0f172a", size=12)),
+        linecolor="#cbd5e1",
+        gridcolor="#f1f5f9",
+        zerolinecolor="#cbd5e1",
+        showline=True
     )
+    
+    # 5. Forzatura su tutti gli assi interni (utilissimo per mappe e sotto-grafici)
+    fig.for_each_xaxis(lambda a: a.update(tickfont=dict(color="#0f172a"), title=dict(font=dict(color="#0f172a"))))
+    fig.for_each_yaxis(lambda a: a.update(tickfont=dict(color="#0f172a"), title=dict(font=dict(color="#0f172a"))))
+    
     return fig
 # =========================================================
 # RILEVAMENTO DISPOSITIVO (Mobile vs Desktop)
