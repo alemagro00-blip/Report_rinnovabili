@@ -174,6 +174,15 @@ footer {visibility: hidden;}
 
 PLOTLY_CONFIG = {"displayModeBar": False, "responsive": True}
 
+# Helper per applicare sfondo bianco e testo scuro a tutti i grafici Plotly
+def forza_sfondo_bianco(fig):
+    fig.update_layout(
+        paper_bgcolor="#ffffff",
+        plot_bgcolor="#ffffff",
+        font=dict(color="#1e293b")
+    )
+    return fig
+
 # =========================================================
 # CARICAMENTO E PULIZIA DATI
 # =========================================================
@@ -263,7 +272,6 @@ def assegna_colore(valore):
 
 df_last["colore"] = df_last["renewables_share_energy"].apply(assegna_colore)
 
-# Abbreviamo leggermente i nomi solo su mobile per risparmiare spazio sull'asse Y
 if IS_MOBILE:
     df_last["country_label"] = df_last["country"].str.replace("Dominican Republic", "Dom. Rep.")
 else:
@@ -276,7 +284,6 @@ fig1 = px.bar(
 
 fig1_height = max(420, len(df_last) * 18) if IS_MOBILE else max(560, len(df_last) * 24)
 
-# Calcolo del massimo per dare extra spazio a destra ed evitare tagli del testo (es. 80.5%)
 max_val = df_last["renewables_share_energy"].max()
 
 fig1.update_traces(
@@ -287,18 +294,17 @@ fig1.update_layout(
     title={"text": f"<b>Chi guida la transizione<br>energetica ({ultimo_anno})</b>", "x": 0.0, "xanchor": "left", "font": dict(size=title_font_size)},
     xaxis_title="Quota di energia rinnovabile (%)", yaxis_title="",
     template="plotly_white", height=fig1_height, showlegend=False,
-    # Margine destro aumentato (r=55) per ospitare comodamente l'etichetta fuori barra
     margin=dict(l=5 if IS_MOBILE else 100, r=55 if IS_MOBILE else 80, t=55 if IS_MOBILE else 80, b=35)
 )
 fig1.update_xaxes(
     showgrid=True, gridcolor="rgba(0,0,0,0.12)", automargin=True,
-    range=[0, max_val * 1.15 if IS_MOBILE else max_val * 1.1] # Estensione del range a destra
+    range=[0, max_val * 1.15 if IS_MOBILE else max_val * 1.1]
 )
 fig1.update_yaxes(
     showgrid=False, categoryorder="array", categoryarray=df_last["country_label"], 
     automargin=True, tickfont=dict(size=8.5 if IS_MOBILE else 11)
 )
-st.plotly_chart(fig1, use_container_width=True, config=PLOTLY_CONFIG)
+st.plotly_chart(forza_sfondo_bianco(fig1), use_container_width=True, config=PLOTLY_CONFIG)
 
 st.markdown(
     '<div class="small-note">I paesi in cima alla classifica sono spesso piccoli Stati con condizioni '
@@ -332,7 +338,7 @@ fig2.update_layout(
 )
 fig2.update_xaxes(showgrid=True, gridcolor="rgba(0,0,0,0.12)", automargin=True)
 fig2.update_yaxes(showgrid=True, gridcolor="rgba(0,0,0,0.12)", automargin=True)
-st.plotly_chart(fig2, use_container_width=True, config=PLOTLY_CONFIG)
+st.plotly_chart(forza_sfondo_bianco(fig2), use_container_width=True, config=PLOTLY_CONFIG)
 
 st.markdown(
     '<div class="insight-box">La classifica di oggi però non racconta tutta la storia: la '
@@ -380,7 +386,7 @@ fig3.update_layout(
 )
 fig3.update_xaxes(showgrid=True, gridcolor="rgba(0,0,0,0.12)", automargin=True)
 fig3.update_yaxes(showgrid=True, gridcolor="rgba(0,0,0,0.12)", automargin=True)
-st.plotly_chart(fig3, use_container_width=True, config=PLOTLY_CONFIG)
+st.plotly_chart(forza_sfondo_bianco(fig3), use_container_width=True, config=PLOTLY_CONFIG)
 
 st.markdown(
     '<div class="insight-box">L\'Italia cresce in modo costante e si mantiene su livelli competitivi. '
@@ -436,7 +442,7 @@ fig4.update_layout(
 )
 fig4.update_xaxes(tickangle=-50 if IS_MOBILE else -40, automargin=True, tickfont=dict(size=8.5 if IS_MOBILE else 11))
 fig4.update_yaxes(range=[0, 100], showgrid=True, gridcolor="rgba(0,0,0,0.12)", automargin=True)
-st.plotly_chart(fig4, use_container_width=True, config=PLOTLY_CONFIG)
+st.plotly_chart(forza_sfondo_bianco(fig4), use_container_width=True, config=PLOTLY_CONFIG)
 
 dipendenza_media = (
     df[df["year"] == ultimo_anno][list(fonti.keys())]
@@ -491,7 +497,7 @@ fig5.update_layout(
 )
 fig5.update_xaxes(showgrid=True, gridcolor="rgba(0,0,0,0.12)", automargin=True)
 fig5.update_yaxes(showgrid=True, gridcolor="rgba(0,0,0,0.12)", automargin=True)
-st.plotly_chart(fig5, use_container_width=True, config=PLOTLY_CONFIG)
+st.plotly_chart(forza_sfondo_bianco(fig5), use_container_width=True, config=PLOTLY_CONFIG)
 
 st.markdown(
     '<div class="small-note">L\'eolico è passato dallo 0,11% al 3,48% (+3,4 punti), il solare dallo 0,00% '
@@ -539,7 +545,7 @@ fig6.update_xaxes(
     range=[0, max_val_r * 1.2 if IS_MOBILE else max_val_r * 1.15]
 )
 fig6.update_yaxes(automargin=True, tickfont=dict(size=8.5 if IS_MOBILE else 11))
-st.plotly_chart(fig6, use_container_width=True, config=PLOTLY_CONFIG)
+st.plotly_chart(forza_sfondo_bianco(fig6), use_container_width=True, config=PLOTLY_CONFIG)
 
 st.markdown(
     '<div class="insight-box">Nonostante la crescita rapida, solare ed eolico restano ancora dietro '
@@ -604,7 +610,7 @@ fig7.update_layout(
 )
 fig7.update_xaxes(showgrid=True, gridcolor="rgba(0,0,0,0.12)", automargin=True)
 fig7.update_yaxes(showgrid=True, gridcolor="rgba(0,0,0,0.12)", automargin=True)
-st.plotly_chart(fig7, use_container_width=True, config=PLOTLY_CONFIG)
+st.plotly_chart(forza_sfondo_bianco(fig7), use_container_width=True, config=PLOTLY_CONFIG)
 
 correlazione = df_gdp["gdp_per_capita"].corr(df_gdp["energy_per_capita"])
 
@@ -658,14 +664,14 @@ fig8.update_layout(
            "font": dict(size=title_font_size, color="#1B4332")},
     template="plotly_white", height=fig8_height, margin=dict(t=50 if IS_MOBILE else 90, b=40, l=0, r=0),
     geo=dict(
-        showframe=False, showcoastlines=False, showland=True, landcolor="white",
-        showocean=True, oceancolor="white", showlakes=False, showcountries=True,
-        countrycolor="#B0B0B0", projection_type="natural earth", bgcolor="rgba(0,0,0,0)"
+        showframe=False, showcoastlines=False, showland=True, landcolor="#f8fafc",
+        showocean=True, oceancolor="#ffffff", showlakes=False, showcountries=True,
+        countrycolor="#B0B0B0", projection_type="natural earth", bgcolor="#ffffff"
     ),
-    paper_bgcolor="rgba(0,0,0,0)",
+    paper_bgcolor="#ffffff",
     legend=dict(orientation="h", yanchor="bottom", y=-0.28 if IS_MOBILE else -0.1, xanchor="center", x=0.5, title="", font=dict(size=legend_font_size))
 )
-st.plotly_chart(fig8, use_container_width=True, config=PLOTLY_CONFIG)
+st.plotly_chart(forza_sfondo_bianco(fig8), use_container_width=True, config=PLOTLY_CONFIG)
 
 st.markdown('<hr class="divider">', unsafe_allow_html=True)
 
